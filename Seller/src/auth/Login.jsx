@@ -14,6 +14,10 @@ export default function Login() {
     const success = login(email, password);
     if (success) {
       navigate("/");
+
+
+
+
     }
   };
 
