@@ -1,25 +1,32 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useData } from "../context/DataProvider";
-import { Mail, Lock, Sprout, ArrowRight, User, Home, MapPin } from "lucide-react";
+import { Mail, Lock, Sprout, ArrowRight, User, Home, MapPin, Phone } from "lucide-react";
+import axios from "axios";
 
 export default function Register() {
-  const { register } = useData();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     farmName: "",
-    location: "",
-    category: "Vegetables",
-    password: ""
+    address: "",
+    password: "",
+    phone: "",
+    role: "farmer"
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = register(formData);
-    if (success) {
-      navigate("/");
+    try {
+      const res = await axios.post("http://localhost:5000/api/users/register", formData);
+      if (res.data.success) {
+        navigate("/login");
+      } else {
+        alert(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      alert(error.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -80,26 +87,26 @@ export default function Register() {
                 required
                 placeholder="482 Organic Way, Valley Crest, CA"
                 className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[12px] font-bold text-slate-700 mb-2">Crop Focus Category</label>
-              <select
-                className="w-full px-4 py-2 text-[13.5px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white font-medium"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              >
-                <option value="Vegetables">Vegetables</option>
-                <option value="Fruits">Fruits</option>
-                <option value="Dairy & Eggs">Dairy & Eggs</option>
-                <option value="Pantry">Pantry</option>
-                <option value="Mixed Pantry">Mixed/Other</option>
-              </select>
+              <label className="block text-[12px] font-bold text-slate-700 mb-2">Phone Number</label>
+              <div className="relative">
+                <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  required
+                  placeholder="1234567890"
+                  className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                />
+              </div>
             </div>
 
             <div>

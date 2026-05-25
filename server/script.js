@@ -11,7 +11,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 app.use('/api/users', require('./routers/userRoutes'))
-// app.use('/api/auth', require('./routers/authRoutes'))
 app.use('/api/products', require('./routers/productRoutes'))
 // app.use('/api/reviews', require('./routers/reviewRoutes'))
 // app.use('/api/cart', require('./routers/cartRoutes'))

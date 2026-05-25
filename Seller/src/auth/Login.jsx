@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useData } from "../context/DataProvider";
 import { Mail, Lock, Sprout, ArrowRight } from "lucide-react";
+import axios from "axios";
 
 export default function Login() {
   const { login } = useData();
@@ -9,15 +10,19 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = login(email, password);
-    if (success) {
-      navigate("/");
-
-
-
-
+    try {
+      const res = await axios.post("http://localhost:5000/api/users/login", { email, password });
+      if (res.data.success) {
+        login(res.data.user, res.data.token);
+        navigate("/");
+      } else {
+        alert(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Something went wrong");
     }
   };
 
