@@ -12,7 +12,7 @@ export default function HelpSupport() {
   const faqs = [
     { q: "How do I withdraw farm earnings?", a: "Go to your dashboard tab and click 'Withdraw funds' underneath your Total Earnings balance. Withdrawals are processed within 1-3 business days directly to your registered bank account." },
     { q: "How do low stock notifications work?", a: "If any of your listed items have 5 or less units in stock, our system tags them as 'Low Stock' and fires an warning bubble in your dashboard alert bar so you can plan your next harvest." },
-    { q: "What fees are charged on sales?", a: "Terra Agro retains a 20% commission on transactions to cover marketing, secure cash-free payments processing, and logistics. 80% represents your direct earnings." }
+    { q: "What fees are charged on sales?", a: "Agro Market retains a 20% commission on transactions to cover marketing, secure cash-free payments processing, and logistics. 80% represents your direct earnings." }
   ];
 
   return (
@@ -79,7 +79,7 @@ export default function HelpSupport() {
               </div>
               <div className="flex items-center gap-3 text-slate-600 text-[13px] font-medium">
                 <Mail className="w-4 h-4 text-primary" />
-                <span>support@terraagro.org</span>
+                <span>support@agromarket.org</span>
               </div>
             </div>
           </div>

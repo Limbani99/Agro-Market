@@ -66,7 +66,7 @@ const Farmers = () => {
                 ? (farmerProducts.reduce((sum, p) => sum + (p.rating || 4.8), 0) / farmerProducts.length).toFixed(1)
                 : "4.8";
 
-            const farmName = farmer.farmName || "Terra Agro";
+            const farmName = farmer.farmName || "Agro Market";
             const location = farmer.location || "California Valley Organic Acres, USA";
             const bio = farmer.bio || "Regenerative organic small-scale family farm committed to chemical-free harvest cultivation.";
             const avatarImage = farmer.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${farmer.name}`;

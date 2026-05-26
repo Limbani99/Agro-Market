@@ -37,7 +37,7 @@ export default function Login() {
           <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-primary flex items-center justify-center border border-emerald-100/50 mx-auto mb-4 hover:scale-105 transition-transform duration-300">
             <Sprout className="w-8 h-8 stroke-[2.2px]" />
           </div>
-          <h2 className="font-serif text-2xl font-bold text-slate-800">Terra Agro Seller Portal</h2>
+          <h2 className="font-serif text-2xl font-bold text-slate-800">Agro Market Seller Portal</h2>
           <p className="text-slate-500 text-xs mt-1.5 font-medium">Log in to manage your organic farm harvest</p>
         </div>
 

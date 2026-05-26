@@ -481,7 +481,7 @@ export const DataProvider = ({ children }) => {
                 return [...prev, {
                     id: farmerId,
                     name: farmer.name,
-                    farmName: farmer.farmName || 'Terra Agro',
+                    farmName: farmer.farmName || 'Agro Market',
                     avatar: farmer.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${farmer.name}`
                 }];
             }

@@ -78,7 +78,7 @@ const FarmerProfile = () => {
         );
     }
 
-    const farmName = farmer.farmName || "Terra Agro";
+    const farmName = farmer.farmName || "Agro Market";
     const bio = farmer.bio || "Regenerative small-scale family farm committed to cultivating organic harvest yields with sustainable methods.";
     const location = farmer.location || "California Valley Organic Acres, USA";
     const avatarImage = farmer.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${farmer.name}`;

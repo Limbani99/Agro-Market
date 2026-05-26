@@ -89,7 +89,7 @@ export default function Layout() {
           <div className="p-6 pb-4">
             <Link to="/" className="block">
               <h1 className="font-serif text-[26px] leading-8 font-bold text-primary tracking-tight">
-                Terra Agro
+                Agro Market
               </h1>
               <p className="text-[11px] font-semibold text-slate-500 tracking-wide uppercase mt-0.5">
                 {user?.farmName}

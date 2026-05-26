@@ -44,7 +44,7 @@ const About = () => {
             return {
                 id: farmer._id,
                 name: farmer.name,
-                farmName: farmer.farmName || "Terra Agro Farm",
+                farmName: farmer.farmName || "Agro Market Farm",
                 rating: Number(averageRating),
                 avatar: farmer.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${farmer.name}`
             };

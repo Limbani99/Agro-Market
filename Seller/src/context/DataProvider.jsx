@@ -547,7 +547,7 @@ export const DataProvider = ({ children }) => {
     ...user,
     type: user.role === "farmer" ? "Farmer" : user.role,
     avatar: user.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${user.name}`,
-    farmName: user.farmName || "Terra Agro",
+    farmName: user.farmName || "Agro Market",
     bio: user.bio || "Regenerative organic small-scale family farm committed to cultivating premium, fresh, chemical-free crops for our local community.",
     location: user.location || "California Valley Organic Acres, USA"
   } : null;

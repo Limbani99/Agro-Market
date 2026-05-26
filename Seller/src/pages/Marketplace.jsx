@@ -7,7 +7,7 @@ export default function Marketplace() {
       <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100 mb-6">
         <ShoppingBag className="w-8 h-8" />
       </div>
-      <h2 className="font-serif text-2xl font-bold text-slate-800">Terra Agro Marketplace</h2>
+      <h2 className="font-serif text-2xl font-bold text-slate-800">Agro Market Marketplace</h2>
       <p className="text-slate-500 text-[14px] mt-2 max-w-md mx-auto leading-relaxed">
         Connect directly with local organic buyers. You are currently viewing the seller backend dashboard. Your farm catalog is fully visible to active buyer accounts.
       </p>

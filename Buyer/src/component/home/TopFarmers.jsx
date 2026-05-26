@@ -68,7 +68,7 @@ function TopFarmers() {
             return {
                 id: farmer._id,
                 name: farmer.name,
-                farmName: farmer.farmName || "Terra Agro",
+                farmName: farmer.farmName || "Agro Market",
                 rating: Number(averageRating),
                 location: farmer.location || "California Valley Organic Acres, USA",
                 desc: farmer.bio || "Regenerative organic small-scale family farm committed to chemical-free harvest cultivation.",
