@@ -47,7 +47,7 @@ export default function Layout() {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/sellerlogin" replace />;
   }
 
   const handleCreateProduct = async (e) => {
@@ -62,7 +62,7 @@ export default function Layout() {
 
   const handleLogoutClick = () => {
     logout();
-    navigate("/login");
+    navigate("/sellerlogin");
   };
 
   const navItems = [

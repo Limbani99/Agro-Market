@@ -152,7 +152,7 @@ export default function Register() {
 
         <div className="text-center mt-6 pt-5 border-t border-slate-100 text-xs font-semibold text-slate-500">
           Already have a farm catalog?{" "}
-          <Link to="/login" className="text-primary hover:text-primary-dark hover:underline font-bold">
+          <Link to="/sellerlogin" className="text-primary hover:text-primary-dark hover:underline font-bold">
             Sign In Here
           </Link>
         </div>

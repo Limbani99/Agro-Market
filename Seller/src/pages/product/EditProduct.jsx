@@ -21,8 +21,11 @@ export default function EditProduct() {
   const [images, setImages] = useState([]);
   const [imageFiles, setImageFiles] = useState([null, null, null, null]);
   const [previews, setPreviews] = useState(["", "", "", ""]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    if (isInitialized) return;
+
     const product = products.find((p) => p.id?.toString() === id?.toString());
     if (product) {
       setFormData({
@@ -41,10 +44,11 @@ export default function EditProduct() {
         initialImages.push("");
       }
       setImages(initialImages);
-    } else {
+      setIsInitialized(true);
+    } else if (products.length > 0) {
       navigate("/products");
     }
-  }, [id, products, navigate]);
+  }, [id, products, navigate, isInitialized]);
 
   const handleFileChange = (index, e) => {
     const file = e.target.files[0];
