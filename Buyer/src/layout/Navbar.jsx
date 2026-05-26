@@ -3,7 +3,7 @@ import { Search, ShoppingCart, User, Menu } from 'lucide-react'
 import { useData } from '../context/DataProvider';
 
 function Navbar() {
-    const { user } = useData();
+    const { user, cartCount } = useData();
     console.log("user:", user);
     return (
         <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
@@ -40,7 +40,9 @@ function Navbar() {
                 <div className="flex items-center gap-4">
                     <Link to="/cart" className="p-2 hover:bg-slate-100 rounded-full transition-colors relative">
                         <ShoppingCart className="w-6 h-6 text-slate-700" />
-                        <span className="absolute top-0 right-0 w-5 h-5 bg-orange-500 text-white text-xs flex items-center justify-center rounded-full border-2 border-white">0</span>
+                        <span className="absolute top-0 right-0 w-5 h-5 bg-orange-500 text-white text-xs flex items-center justify-center rounded-full border-2 border-white">
+                            {cartCount || 0}
+                        </span>
                     </Link>
                     {user ? (
                          <Link to="/profile" className="hidden sm:flex p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-700">

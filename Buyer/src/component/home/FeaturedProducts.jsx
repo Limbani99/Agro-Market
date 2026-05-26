@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Star, ShoppingCart, ArrowRight } from 'lucide-react'
+import { Star, ShoppingCart, ArrowRight, Check } from 'lucide-react'
+import { useData } from '../../context/DataProvider'
 
 const products = [
     {
@@ -46,6 +47,15 @@ const products = [
 ]
 
 function FeaturedProducts() {
+    const { addToCart } = useData();
+    const [addedIdx, setAddedIdx] = useState(null);
+
+    const handleAdd = (product, idx) => {
+        addToCart(product, 1);
+        setAddedIdx(idx);
+        setTimeout(() => setAddedIdx(null), 1500);
+    };
+
     return (
         <section className="py-24 bg-slate-50">
             <div className="container mx-auto px-4">
@@ -89,9 +99,16 @@ function FeaturedProducts() {
                                     <span className="text-xs text-slate-500">By {product.seller}</span>
                                 </div>
 
-                                <button className="w-full py-3 border-2 border-primary text-primary font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-primary hover:text-white">
-                                    <ShoppingCart className="w-5 h-5" />
-                                    Add to Cart
+                                <button
+                                    onClick={() => handleAdd(product, idx)}
+                                    className={`w-full py-3 border-2 font-bold rounded-xl flex items-center justify-center gap-2 transition-all ${
+                                        addedIdx === idx
+                                            ? 'border-green-500 bg-green-500 text-white'
+                                            : 'border-primary text-primary hover:bg-primary hover:text-white'
+                                    }`}
+                                >
+                                    {addedIdx === idx ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
+                                    {addedIdx === idx ? 'Added!' : 'Add to Cart'}
                                 </button>
                             </div>
                         </div>

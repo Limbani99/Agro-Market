@@ -16,7 +16,7 @@ export default function Login() {
       const res = await axios.post("http://localhost:5000/api/users/login", { email, password });
       if (res.data.success) {
         login(res.data.user, res.data.token);
-        navigate("/");
+        navigate("/dashboard");
       } else {
         alert(res.data.message);
       }

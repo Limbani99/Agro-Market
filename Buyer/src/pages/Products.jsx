@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Star, Plus, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { Star, Plus, ChevronLeft, ChevronRight, X, Check } from 'lucide-react'
 import ProductHero from '../component/products/ProductHero'
 import FilterBar from '../component/products/FilterBar'
 import ProductSidebar from '../component/products/ProductSidebar'
+import { useData } from '../context/DataProvider'
 
 const categories = [
     { name: 'Vegetables', image: '/assets/cat_veg.png' },
@@ -11,30 +12,17 @@ const categories = [
     { name: 'Organic', image: '/assets/cat_organic.png' },
 ]
 
-const products = [
-    {
-        id: 1,
-        name: 'Crimson Heirloom...',
-        seller: 'Sunrise Farms',
-        rating: 4.8,
-        price: '4.99',
-        unit: 'lb',
-        image: '/assets/tomatoes.png',
-        badge: 'PEAK SEASON'
-    },
-    {
-        id: 2,
-        name: 'Sweet Nantes Carrots',
-        seller: 'Valley Root Co.',
-        rating: 4.5,
-        price: '3.50',
-        unit: 'bunch',
-        image: '/assets/carrots.png',
-        badge: 'ORGANIC'
-    }
-]
-
 function Products() {
+    const { products, addToCart } = useData();
+    const [addedId, setAddedId] = useState(null);
+
+    const handleAdd = (e, product) => {
+        e.preventDefault();
+        addToCart(product, 1);
+        setAddedId(product.id);
+        setTimeout(() => setAddedId(null), 1500);
+    };
+
     return (
 
         <div className="bg-white min-h-screen">
@@ -110,10 +98,17 @@ function Products() {
                                             <span className="text-2xl font-black text-secondary">${p.price}</span>
                                             <span className="text-xs text-slate-400 font-bold ml-1">/ {p.unit}</span>
                                         </div>
-                                        <Link to="/cart" className="px-4 py-2 bg-primary/5 text-primary rounded-xl font-bold flex items-center gap-2 hover:bg-primary hover:text-white transition-all">
-                                            <Plus className="w-4 h-4" />
-                                            Add
-                                        </Link>
+                                        <button
+                                            onClick={(e) => handleAdd(e, p)}
+                                            className={`px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all ${
+                                                addedId === p.id
+                                                    ? 'bg-green-500 text-white'
+                                                    : 'bg-primary/5 text-primary hover:bg-primary hover:text-white'
+                                            }`}
+                                        >
+                                            {addedId === p.id ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                                            {addedId === p.id ? 'Added' : 'Add'}
+                                        </button>
                                     </div>
                                 </div>
                             </div>

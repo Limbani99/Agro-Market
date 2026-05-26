@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 // Get all products
 const getallProducts = async (req, res) => {
     try {
-        const products = await Product.find();
+        const products = await Product.find().populate('sellerId', 'name farmName');
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching products', error });
@@ -39,7 +39,20 @@ const createProduct = async (req, res) => {
             images = req.files.map(file => `http://localhost:5000/uploads/${file.filename}`);
         }
 
-        const newProduct = new Product({ name, description, price, category, stock, images });
+        const sellerId = req.user ? req.user.id : req.body.sellerId;
+        if (!sellerId) {
+            return res.status(400).json({ message: 'Seller ID is required' });
+        }
+
+        const newProduct = new Product({
+            sellerId,
+            name,
+            description,
+            price: Number(price),
+            category,
+            stock: Number(stock),
+            images
+        });
         const savedProduct = await newProduct.save();
         res.status(201).json(savedProduct);
     } catch (error) {

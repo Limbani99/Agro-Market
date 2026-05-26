@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import { Calendar, Leaf, Zap, Box } from 'lucide-react'
 
-const ProductTabs = () => {
+const ProductTabs = ({ product }) => {
     const [activeTab, setActiveTab] = useState('Description')
-    const tabs = ['Description', 'Product Details', 'Reviews (128)']
+    const tabs = ['Description', 'Product Details', 'Reviews (24)']
 
     const attributes = [
         { icon: <Calendar className="w-5 h-5 text-orange-700" />, label: 'Harvested', value: 'Within 24 Hours' },
         { icon: <Leaf className="w-5 h-5 text-orange-700" />, label: 'Practice', value: '100% Organic' },
-        { icon: <Zap className="w-5 h-5 text-orange-700" />, label: 'Nutrition', value: 'High in Vit A & K' },
+        { icon: <Zap className="w-5 h-5 text-orange-700" />, label: 'Stock Available', value: `${product.stock} units` },
         { icon: <Box className="w-5 h-5 text-orange-700" />, label: 'Storage', value: 'Crisper Drawer, 5-7 days' },
     ]
 
@@ -36,13 +36,32 @@ const ProductTabs = () => {
                 {/* Tab Content */}
                 <div className="p-8 lg:p-12">
                     <div className="max-w-4xl mx-auto">
-                        <h2 className="text-3xl font-black text-secondary mb-6">The King of Greens</h2>
-                        <p className="text-slate-500 leading-relaxed mb-12 text-lg">
-                            Our Organic Lacinato Kale is grown in the mineral-rich soils of the valley, giving it a deeper color 
-                            and a more robust flavor profile than standard curly varieties. The leaves are tender yet hold up 
-                            beautifully to cooking, making it an incredibly versatile ingredient for professional kitchens 
-                            and home cooks alike.
-                        </p>
+                        {activeTab === 'Description' && (
+                            <>
+                                <h2 className="text-3xl font-black text-secondary mb-6">{product.name}</h2>
+                                <p className="text-slate-500 leading-relaxed mb-12 text-lg">
+                                    {product.description}
+                                </p>
+                            </>
+                        )}
+                        {activeTab === 'Product Details' && (
+                            <>
+                                <h2 className="text-3xl font-black text-secondary mb-6">Specification Details</h2>
+                                <p className="text-slate-500 leading-relaxed mb-12 text-lg">
+                                    This premium yield of <strong>{product.name}</strong> belongs to the category of <strong>{product.category}</strong>. 
+                                    It is freshly prepared, verified, and shipped under peak temperature controls from <strong>{product.seller || 'Riverbend Farm'}</strong>.
+                                </p>
+                            </>
+                        )}
+                        {activeTab === 'Reviews (24)' && (
+                            <>
+                                <h2 className="text-3xl font-black text-secondary mb-6">Buyer Feedback</h2>
+                                <p className="text-slate-500 leading-relaxed mb-12 text-lg">
+                                    This crop has an aggregate rating of <strong>{product.rating || 4.8} out of 5 stars</strong> from verified local platform transactions. 
+                                    Buyers appreciate the fresh fragrance and sturdy transit packaging.
+                                </p>
+                            </>
+                        )}
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {attributes.map((attr, i) => (

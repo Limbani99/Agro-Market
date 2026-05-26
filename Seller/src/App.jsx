@@ -1,6 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useData } from "./context/DataProvider";
+import { Routes, Route } from "react-router-dom";
 
 // Layouts
 import Layout from "./layout/Layout";
@@ -29,31 +28,14 @@ import Earnings from "./pages/Earnings";
 import Settings from "./pages/Settings";
 import HelpSupport from "./pages/HelpSupport";
 
-// Protected Route Wrapper
-function ProtectedRoute({ children }) {
-  const { isAuthenticated } = useData();
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
-}
-
 function App() {
   return (
     <Routes>
-      {/* Public Auth Routes */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-
-      {/* Secured Sidebar Portal */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Layout />
-          </ProtectedRoute>
-        }
-      >
+      <Route path="/" element={<Layout />}>
         <Route index element={<Dashboard />} />
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="marketplace" element={<Marketplace />} />
-        
+
         {/* Product Catalog */}
         <Route path="products" element={<Products />} />
         <Route path="products/add" element={<AddProduct />} />
@@ -79,8 +61,8 @@ function App() {
         <Route path="settings" element={<Settings />} />
         <Route path="support" element={<HelpSupport />} />
       </Route>
-
-      {/* Error Page */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

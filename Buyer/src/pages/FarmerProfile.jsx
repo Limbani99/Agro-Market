@@ -1,6 +1,7 @@
-import React from 'react';
-import { MapPin, Star, Mail, CheckCircle, Leaf, Truck, Calendar, ShoppingCart, Plus, ChevronRight, MessageSquare } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, Star, Mail, CheckCircle, Leaf, Truck, Calendar, ShoppingCart, Plus, ChevronRight, MessageSquare, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useData } from '../context/DataProvider';
 
 const FarmerProfile = () => {
     const products = [
@@ -78,6 +79,15 @@ const FarmerProfile = () => {
             seller: 'Riverbend Farm'
         }
     ];
+
+    const { addToCart } = useData();
+    const [addedId, setAddedId] = useState(null);
+
+    const handleAdd = (product) => {
+        addToCart({ ...product, price: Number(product.price), badge: product.badge || 'ORGANIC', badgeColor: 'bg-green-100 text-green-700', category: 'Farm Fresh' }, 1);
+        setAddedId(product.id);
+        setTimeout(() => setAddedId(null), 1500);
+    };
 
     return (
         <div className="bg-white min-h-screen">
@@ -234,8 +244,15 @@ const FarmerProfile = () => {
                                             <span className="text-xl font-black text-secondary">${p.price}</span>
                                             <span className="text-xs text-slate-500 font-bold ml-1">/ {p.unit}</span>
                                         </div>
-                                        <button className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-sm">
-                                            <ShoppingCart className="w-5 h-5" />
+                                        <button
+                                            onClick={() => handleAdd(p)}
+                                            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-sm ${
+                                                addedId === p.id
+                                                    ? 'bg-green-500 text-white'
+                                                    : 'bg-primary/10 text-primary hover:bg-primary hover:text-white'
+                                            }`}
+                                        >
+                                            {addedId === p.id ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
                                         </button>
                                     </div>
                                 </div>

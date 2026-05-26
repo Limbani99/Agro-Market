@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate, Navigate } from "react-router-dom";
 import { useData } from "../context/DataProvider";
 import {
   LayoutDashboard,
@@ -21,12 +21,10 @@ import {
 } from "lucide-react";
 
 export default function Layout() {
-  const { stats, addNewProduct, sellerInfo, user, logout } = useData();
+  const { stats, addNewProduct, sellerInfo, user, logout, authChecked } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const navigate = useNavigate();
-
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -35,6 +33,22 @@ export default function Layout() {
     description: "",
     image: ""
   });
+  const navigate = useNavigate();
+
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFB] flex items-center justify-center font-body">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="w-10 h-10 border-4 border-[#3F704D] border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-slate-500 font-bold text-sm">Verifying Grower Session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
   const handleCreateProduct = async (e) => {
     e.preventDefault();
@@ -78,7 +92,7 @@ export default function Layout() {
                 Terra Agro
               </h1>
               <p className="text-[11px] font-semibold text-slate-500 tracking-wide uppercase mt-0.5">
-                {user.farmName}
+                {user?.farmName}
               </p>
             </Link>
           </div>
@@ -87,20 +101,19 @@ export default function Layout() {
           <nav className="mt-4 flex flex-col gap-0.5 max-h-[50vh] overflow-y-auto no-scrollbar">
             {navItems.map((item) => (
               <NavLink
-                key={item.name}
-                to={item.path}
+                key={item?.name}
+                to={item?.path}
                 className={({ isActive }) => `
                   flex items-center justify-between py-3 pl-6 pr-4 font-semibold text-[14.5px] transition-all relative
-                  ${
-                    isActive
-                      ? "text-primary bg-bg-light/40 border-r-4 border-primary font-bold"
-                      : "text-slate-600 hover:text-primary hover:bg-bg-light/20"
+                  ${isActive
+                    ? "text-primary bg-bg-light/40 border-r-4 border-primary font-bold"
+                    : "text-slate-600 hover:text-primary hover:bg-bg-light/20"
                   }
                 `}
               >
                 <div className="flex items-center gap-3">
                   <item.icon className="w-[18px] h-[18px] stroke-[2px]" />
-                  <span>{item.name}</span>
+                  <span>{item?.name}</span>
                 </div>
               </NavLink>
             ))}
@@ -126,10 +139,9 @@ export default function Layout() {
                 to={item.path}
                 className={({ isActive }) => `
                   flex items-center gap-3 py-2 px-4 font-medium text-[13.5px] rounded-lg transition-all
-                  ${
-                    isActive
-                      ? "text-primary bg-bg-light/40 font-bold"
-                      : "text-slate-600 hover:text-primary hover:bg-bg-light/20"
+                  ${isActive
+                    ? "text-primary bg-bg-light/40 font-bold"
+                    : "text-slate-600 hover:text-primary hover:bg-bg-light/20"
                   }
                 `}
               >
