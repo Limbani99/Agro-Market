@@ -61,7 +61,8 @@ const updateUserProfile = async (req, res) => {
         if (location !== undefined) user.location = location;
 
         if (req.file) {
-            user.avatar = `http://localhost:5000/uploads/${req.file.filename}`;
+            const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
+            user.avatar = `${baseUrl}/uploads/${req.file.filename}`;
         } else if (avatar !== undefined) {
             user.avatar = avatar;
         }

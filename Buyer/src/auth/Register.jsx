@@ -28,7 +28,8 @@ const Register = () => {
         }
         console.log("Form Submitted (Front-End Only):", formData);
         try {
-            const res = await axios.post('http://localhost:5000/api/users/register', formData);
+            const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+            const res = await axios.post(`${API_URL}/users/register`, formData);
             console.log("Response:", res.data);
             toast.success("User registered successfully");
             navigate("/login");

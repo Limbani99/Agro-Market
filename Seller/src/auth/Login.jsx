@@ -13,7 +13,8 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/users/login", { email, password });
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const res = await axios.post(`${API_URL}/users/login`, { email, password });
       if (res.data.success) {
         login(res.data.user, res.data.token);
         navigate("/dashboard");

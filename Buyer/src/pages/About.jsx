@@ -14,9 +14,10 @@ const About = () => {
         const fetchAboutData = async () => {
             setIsLoading(true);
             try {
+                const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
                 const [farmersRes, reviewsRes] = await Promise.all([
-                    axios.get("http://localhost:5000/api/users/farmers"),
-                    axios.get("http://localhost:5000/api/reviews/all")
+                    axios.get(`${API_URL}/users/farmers`),
+                    axios.get(`${API_URL}/reviews/all`)
                 ]);
                 setFarmersList(farmersRes.data.farmers || []);
                 setTestimonialsList(reviewsRes.data || []);

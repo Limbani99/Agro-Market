@@ -11,7 +11,7 @@ const FarmerProfile = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [addedId, setAddedId] = useState(null);
 
-    const API = "http://localhost:5000/api";
+    const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
     useEffect(() => {
         const fetchFarmerDetails = async () => {

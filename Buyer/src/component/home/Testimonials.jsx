@@ -32,7 +32,8 @@ function Testimonials() {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const res = await axios.get("http://localhost:5000/api/reviews/all");
+                const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+                const res = await axios.get(`${API_URL}/reviews/all`);
                 setReviewsList(res.data || []);
             } catch (err) {
                 console.error("Error fetching reviews in Testimonials:", err);

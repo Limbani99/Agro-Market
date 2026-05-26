@@ -12,7 +12,7 @@ const ProductTabs = ({ product, reviewsList: propReviewsList, onReviewAdded }) =
     const [hoveredStar, setHoveredStar] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const API = "http://localhost:5000/api";
+    const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
     const reviewsList = propReviewsList !== undefined ? propReviewsList : internalReviews;
 

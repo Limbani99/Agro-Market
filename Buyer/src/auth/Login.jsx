@@ -22,7 +22,8 @@ const Login = () => {
     e.preventDefault();
     console.log("Login Form Submitted (Front-End Only):", formData);
     try {
-      const { data } = await axios.post('http://localhost:5000/api/users/login', formData);
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const { data } = await axios.post(`${API_URL}/users/login`, formData);
       console.log("Response:", data);
       login(data.user, data.token)
       toast.success("User logged in successfully");

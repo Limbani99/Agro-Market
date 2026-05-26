@@ -11,7 +11,7 @@ function ProductDetail() {
     const { products } = useData();
     const [reviewsList, setReviewsList] = useState([]);
 
-    const API = "http://localhost:5000/api";
+    const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
     const product = products.find((p) => p.id?.toString() === id?.toString());
 

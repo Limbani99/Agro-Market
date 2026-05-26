@@ -61,8 +61,9 @@ function App() {
         <Route path="settings" element={<Settings />} />
         <Route path="support" element={<HelpSupport />} />
       </Route>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+
+      <Route path="/sellerlogin" element={<Login />} />
+      <Route path="/sellerregister" element={<Register />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

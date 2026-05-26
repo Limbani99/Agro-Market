@@ -3,6 +3,8 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, User, Menu, Bell, Check, Trash2, X } from 'lucide-react';
 import { useData } from '../context/DataProvider';
 
+const SELLER_URL = import.meta.env.VITE_SELLER_URL || "http://localhost:5174";
+
 function Navbar() {
     const navigate = useNavigate();
     const [showNotifications, setShowNotifications] = useState(false);
@@ -10,14 +12,14 @@ function Navbar() {
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
 
-    const { 
-        user, 
-        cartCount, 
-        notifications, 
-        markNotificationRead, 
-        markAllNotificationsRead, 
+    const {
+        user,
+        cartCount,
+        notifications,
+        markNotificationRead,
+        markAllNotificationsRead,
         deleteNotification,
-        logout 
+        logout
     } = useData();
 
     const unreadCount = notifications ? notifications.filter(n => !n.read).length : 0;
@@ -105,9 +107,8 @@ function Navbar() {
                                                 notifications.map((notif) => (
                                                     <div
                                                         key={notif.id}
-                                                        className={`px-4 py-3 flex gap-3 border-b border-slate-50 transition-colors relative group ${
-                                                            notif.read ? 'bg-white' : 'bg-green-50/10 border-l-2 border-primary'
-                                                        }`}
+                                                        className={`px-4 py-3 flex gap-3 border-b border-slate-50 transition-colors relative group ${notif.read ? 'bg-white' : 'bg-green-50/10 border-l-2 border-primary'
+                                                            }`}
                                                     >
                                                         <div className="flex-1 min-w-0">
                                                             <div className="flex justify-between items-start gap-2">
@@ -207,11 +208,13 @@ function Navbar() {
                         <div className="hidden sm:flex items-center gap-3">
                             <Link to="/login" className="px-4 py-2 text-xs font-bold text-primary hover:bg-primary/5 rounded-full transition-all">Login</Link>
                             <Link to="/register" className="px-5 py-2 bg-primary text-white text-xs font-bold rounded-full hover:bg-primary/95 transition-all shadow-sm shadow-primary/10">Register</Link>
-                        </div>  
+                            <a href={`${SELLER_URL}/sellerlogin`} target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-xs font-bold text-primary hover:bg-primary/5 rounded-full transition-all">Seller Login</a>
+
+                        </div>
                     )}
 
-                    <button 
-                        onClick={() => setShowMobileMenu(!showMobileMenu)} 
+                    <button
+                        onClick={() => setShowMobileMenu(!showMobileMenu)}
                         className="md:hidden p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-700 focus:outline-none"
                     >
                         <Menu className="w-6 h-6" />
@@ -230,7 +233,7 @@ function Navbar() {
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
-                        
+
                         <div className="flex flex-col gap-4 text-slate-600 font-bold text-sm">
                             <NavLink to="/" onClick={() => setShowMobileMenu(false)} className={({ isActive }) => isActive ? 'text-primary' : 'hover:text-primary text-slate-500'}>Home</NavLink>
                             <NavLink to="/products" onClick={() => setShowMobileMenu(false)} className={({ isActive }) => isActive ? 'text-primary' : 'hover:text-primary text-slate-500'}>Products</NavLink>

@@ -31,7 +31,8 @@ const Farmers = () => {
         const fetchFarmers = async () => {
             setIsLoading(true);
             try {
-                const res = await axios.get("http://localhost:5000/api/users/farmers");
+                const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+                const res = await axios.get(`${API_URL}/users/farmers`);
                 setFarmersList(res.data.farmers || []);
             } catch (err) {
                 console.error("Error fetching farmers:", err);

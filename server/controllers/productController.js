@@ -34,9 +34,10 @@ const createProduct = async (req, res) => {
             return res.status(400).json({ message: 'All fields are required' });
         }
         
+        const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
         let images = [];
         if (req.files && req.files.length > 0) {
-            images = req.files.map(file => `http://localhost:5000/uploads/${file.filename}`);
+            images = req.files.map(file => `${baseUrl}/uploads/${file.filename}`);
         }
 
         const sellerId = req.user ? req.user.id : req.body.sellerId;
@@ -65,6 +66,7 @@ const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
         const updateData = { ...req.body };
+        const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
         
         let finalImages = [];
         if (req.body.images) {
@@ -80,7 +82,7 @@ const updateProduct = async (req, res) => {
                 finalImages = parsedImages.map(img => {
                     if (img === "NEW_FILE" || img === null || img === "null" || img === "") {
                         if (req.files && req.files[fileIdx]) {
-                            const newUrl = `http://localhost:5000/uploads/${req.files[fileIdx].filename}`;
+                            const newUrl = `${baseUrl}/uploads/${req.files[fileIdx].filename}`;
                             fileIdx++;
                             return newUrl;
                         }
@@ -89,7 +91,7 @@ const updateProduct = async (req, res) => {
                 }).filter(img => img !== "NEW_FILE" && img !== null && img !== "null" && img !== "");
             }
         } else if (req.files && req.files.length > 0) {
-            finalImages = req.files.map(file => `http://localhost:5000/uploads/${file.filename}`);
+            finalImages = req.files.map(file => `${baseUrl}/uploads/${file.filename}`);
         }
         
         updateData.images = finalImages;

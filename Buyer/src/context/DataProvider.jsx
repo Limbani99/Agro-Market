@@ -4,7 +4,7 @@ import React from "react";
 
 export const DataContext = createContext();
 
-const API = "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 // Helper: map a raw DB cart item to our UI shape
 const mapDbItem = (dbItem) => {

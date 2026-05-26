@@ -3,6 +3,8 @@ import axios from "axios";
 
 export const DataContext = createContext();
 
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
 // Helper: map a raw DB order to Seller UI shape
 const mapDbOrderToSeller = (dbOrder, sellerId) => {
   const myProducts = (dbOrder.products || []).filter(p => {
@@ -160,7 +162,7 @@ export const DataProvider = ({ children }) => {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/products");
+      const res = await axios.get(`${API}/products`);
       const mapped = res.data.map(p => ({
         ...p,
         id: p._id,
@@ -202,7 +204,7 @@ export const DataProvider = ({ children }) => {
       }
       
       if (currentUserId) {
-        const res = await axios.get("http://localhost:5000/api/order/seller");
+        const res = await axios.get(`${API}/order/seller`);
         const mapped = res.data.map(o => mapDbOrderToSeller(o, currentUserId)).filter(Boolean);
         setOrders(mapped);
       } else {
@@ -227,7 +229,7 @@ export const DataProvider = ({ children }) => {
       }
       
       if (currentUserId) {
-        const res = await axios.get("http://localhost:5000/api/reviews/seller");
+        const res = await axios.get(`${API}/reviews/seller`);
         const mapped = res.data.map(mapDbReviewToSeller);
         setReviews(mapped);
       } else {
@@ -252,7 +254,7 @@ export const DataProvider = ({ children }) => {
       }
       
       if (currentUserId) {
-        const res = await axios.get("http://localhost:5000/api/notifications");
+        const res = await axios.get(`${API}/notifications`);
         const mapped = res.data.map(n => ({
           id: n._id,
           type: n.type || 'general',
@@ -272,7 +274,7 @@ export const DataProvider = ({ children }) => {
 
   const markNotificationRead = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/notifications/read/${id}`);
+      await axios.put(`${API}/notifications/read/${id}`);
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
     } catch (error) {
       console.error("Error marking notification read:", error);
@@ -281,7 +283,7 @@ export const DataProvider = ({ children }) => {
 
   const markAllNotificationsRead = async () => {
     try {
-      await axios.put("http://localhost:5000/api/notifications/read-all");
+      await axios.put(`${API}/notifications/read-all`);
       setNotifications(prev => prev.map(n => ({ ...n, read: true })));
     } catch (error) {
       console.error("Error marking all notifications read:", error);
@@ -290,7 +292,7 @@ export const DataProvider = ({ children }) => {
 
   const deleteNotification = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/notifications/${id}`);
+      await axios.delete(`${API}/notifications/${id}`);
       setNotifications(prev => prev.filter(n => n.id !== id));
     } catch (error) {
       console.error("Error deleting notification:", error);
@@ -368,7 +370,7 @@ export const DataProvider = ({ children }) => {
         formData.append("images", productData.image);
       }
       
-      await axios.post("http://localhost:5000/api/products/add", formData, {
+      await axios.post(`${API}/products/add`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -400,7 +402,7 @@ export const DataProvider = ({ children }) => {
         });
       }
       
-      await axios.put(`http://localhost:5000/api/products/update/${productData.id}`, formData, {
+      await axios.put(`${API}/products/update/${productData.id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -417,7 +419,7 @@ export const DataProvider = ({ children }) => {
   const deleteProduct = async (id) => {
     if (!window.confirm("Are you sure you want to remove this listing?")) return false;
     try {
-      await axios.delete(`http://localhost:5000/api/products/delete/${id}`);
+      await axios.delete(`${API}/products/delete/${id}`);
       await fetchProducts();
       return true;
     } catch (error) {
@@ -429,7 +431,7 @@ export const DataProvider = ({ children }) => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      await axios.put(`http://localhost:5000/api/order/update/${orderId}`, { status: newStatus });
+      await axios.put(`${API}/order/update/${orderId}`, { status: newStatus });
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
       return true;
     } catch (error) {
@@ -441,7 +443,7 @@ export const DataProvider = ({ children }) => {
 
   const addReviewReply = async (reviewId, text) => {
     try {
-      await axios.put(`http://localhost:5000/api/reviews/reply/${reviewId}`, { reply: text });
+      await axios.put(`${API}/reviews/reply/${reviewId}`, { reply: text });
       setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, reply: text } : r));
       return true;
     } catch (error) {
@@ -466,7 +468,7 @@ export const DataProvider = ({ children }) => {
         formData.append("avatar", profileData.avatar);
       }
 
-      const res = await axios.put("http://localhost:5000/api/users/profile", formData, {
+      const res = await axios.put(`${API}/users/profile`, formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
@@ -514,7 +516,7 @@ export const DataProvider = ({ children }) => {
 
   const changeUserPassword = async (currentPassword, newPassword) => {
     try {
-      await axios.put("http://localhost:5000/api/users/change-password", {
+      await axios.put(`${API}/users/change-password`, {
         currentPassword,
         newPassword
       });
