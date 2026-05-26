@@ -86,7 +86,7 @@ export default function Dashboard() {
               {stats.totalProducts}
             </p>
             <div className="w-full bg-[#EAE6DB] rounded-full h-1.5 mt-3 overflow-hidden">
-              <div className="bg-[#3F704D] h-1.5 rounded-full group-hover:scale-x-105 origin-left transition-transform duration-500" style={{ width: "65%" }}></div>
+              <div className="bg-primary h-1.5 rounded-full group-hover:scale-x-105 origin-left transition-transform duration-500" style={{ width: "65%" }}></div>
             </div>
           </div>
         </div>
@@ -115,9 +115,9 @@ export default function Dashboard() {
             <div className="flex gap-1.5 items-end h-9 mb-1">
               <div className="w-2 bg-[#EAE6DB] rounded-sm h-3 group-hover:h-4 transition-all duration-300"></div>
               <div className="w-2 bg-[#EAE6DB] rounded-sm h-6 group-hover:h-5 transition-all duration-300"></div>
-              <div className="w-2 bg-[#3F704D] rounded-sm h-8 group-hover:h-9 transition-all duration-300"></div>
+              <div className="w-2 bg-primary rounded-sm h-8 group-hover:h-9 transition-all duration-300"></div>
               <div className="w-2 bg-[#EAE6DB] rounded-sm h-4 group-hover:h-6 transition-all duration-300"></div>
-              <div className="w-2 bg-[#3F704D] rounded-sm h-5 group-hover:h-7 transition-all duration-300"></div>
+              <div className="w-2 bg-primary rounded-sm h-5 group-hover:h-7 transition-all duration-300"></div>
             </div>
           </div>
         </div>
@@ -186,7 +186,7 @@ export default function Dashboard() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-[#F0EDE6] text-slate-400 text-[11px] font-bold uppercase tracking-wider">
+                  <tr className="border-b border-slate-100 text-slate-400 text-[11px] font-bold uppercase tracking-wider">
                     <th className="pb-3.5 font-bold">Order ID</th>
                     <th className="pb-3.5 font-bold">Customer</th>
                     <th className="pb-3.5 font-bold">Product</th>
@@ -196,7 +196,7 @@ export default function Dashboard() {
                 </thead>
                 <tbody className="divide-y divide-[#F0EDE6]/60">
                   {orders.slice(0, 4).map((order) => (
-                    <tr key={order.id} className="group hover:bg-[#F8F6F0]/40 transition-colors">
+                    <tr key={order.id} className="group hover:bg-bg-light/40 transition-colors">
                       <td className="py-4 text-[13.5px] font-bold text-slate-800 font-display">
                         #{order.id}
                       </td>
@@ -250,12 +250,12 @@ export default function Dashboard() {
                 {products.slice(0, 2).map((prod) => (
                   <div
                     key={prod.id}
-                    className="flex items-center gap-4 p-3 bg-[#F8F6F0]/40 rounded-2xl border border-[#EAE6DB]/40 hover:border-[#EAE6DB] transition-all hover:bg-white hover:shadow-sm"
+                    className="flex items-center gap-4 p-3 bg-bg-light/40 rounded-2xl border border-[#EAE6DB]/40 hover:border-[#EAE6DB] transition-all hover:bg-white hover:shadow-sm"
                   >
                     <img
                       src={prod.image}
                       alt={prod.name}
-                      className="w-[52px] h-[52px] rounded-xl object-cover border border-[#E9E6DC]"
+                      className="w-[52px] h-[52px] rounded-xl object-cover border border-slate-100"
                     />
                     <div className="flex-1">
                       <p className="text-[13.5px] font-bold text-slate-800">
@@ -322,3 +322,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+

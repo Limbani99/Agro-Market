@@ -32,7 +32,7 @@ export default function Login() {
       <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-primary/5 blur-3xl" />
       <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-accent/5 blur-3xl" />
 
-      <div className="w-full max-w-md bg-white rounded-3xl border border-[#E9E6DC] p-8 shadow-xl relative z-10 animate-in fade-in zoom-in-95 duration-300">
+      <div className="w-full max-w-md bg-white rounded-3xl border border-slate-100 p-8 shadow-xl relative z-10 animate-in fade-in zoom-in-95 duration-300">
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-primary flex items-center justify-center border border-emerald-100/50 mx-auto mb-4 hover:scale-105 transition-transform duration-300">
             <Sprout className="w-8 h-8 stroke-[2.2px]" />
@@ -50,7 +50,7 @@ export default function Login() {
                 type="email"
                 required
                 placeholder="james.miller@greenvalley.com"
-                className="w-full pl-10 pr-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium placeholder-slate-400"
+                className="w-full pl-10 pr-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium placeholder-slate-400"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -65,7 +65,7 @@ export default function Login() {
                 type="password"
                 required
                 placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium placeholder-slate-400"
+                className="w-full pl-10 pr-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium placeholder-slate-400"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -79,14 +79,14 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full py-3 bg-[#3F704D] hover:bg-primary-dark text-white rounded-full font-bold shadow-sm transition-all duration-200 mt-2 active:scale-95 inline-flex items-center justify-center gap-2"
+            className="w-full py-3 bg-primary hover:bg-primary-dark text-white rounded-full font-bold shadow-sm transition-all duration-200 mt-2 active:scale-95 inline-flex items-center justify-center gap-2"
           >
             <span>Access Portal</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
 
-        <div className="text-center mt-6 pt-5 border-t border-[#F0EDE6] text-xs font-semibold text-slate-500">
+        <div className="text-center mt-6 pt-5 border-t border-slate-100 text-xs font-semibold text-slate-500">
           New harvest manager?{" "}
           <Link to="/register" className="text-primary hover:text-primary-dark hover:underline font-bold">
             Create Farm Catalog
@@ -96,3 +96,5 @@ export default function Login() {
     </div>
   );
 }
+
+

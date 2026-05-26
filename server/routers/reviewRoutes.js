@@ -1,11 +1,19 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require('../middleware/auth');
+const {
+    addReview,
+    getProductReviews,
+    getSellerReviews,
+    addReply,
+    getAllReviews
+} = require('../controllers/reviewController');
 
-// Routes go here
-const { getFarmers, addFarmer, updateFarmer, deleteFarmer } = require('../controllers/farmerController');
+// Review endpoints
+router.post('/add', authMiddleware([]), addReview); // Logged in user can add a review
+router.get('/all', getAllReviews); // Public can view all reviews for testimonials
+router.get('/product/:productId', getProductReviews); // Public can view product reviews
+router.get('/seller', authMiddleware(['farmer']), getSellerReviews); // Farmer can view reviews on their products
+router.put('/reply/:reviewId', authMiddleware(['farmer']), addReply); // Farmer can reply to a review
 
-router.get('/', getFarmers);
-router.post('/add', addFarmer);
-router.put('/update/:id', updateFarmer);
-router.delete('/delete/:id', deleteFarmer);
 module.exports = router;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useData } from "../../context/DataProvider";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Upload } from "lucide-react";
 
 export default function EditProfile() {
   const { user, updateProfile } = useData();
@@ -16,10 +16,26 @@ export default function EditProfile() {
     email: user.email
   });
 
-  const handleSubmit = (e) => {
+  const [imageFile, setImageFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(user.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${user.name}`);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    updateProfile(formData);
-    navigate("/profile");
+    const success = await updateProfile({
+      ...formData,
+      imageFile
+    });
+    if (success) {
+      navigate("/profile");
+    }
   };
 
   return (
@@ -38,15 +54,36 @@ export default function EditProfile() {
       </div>
 
       {/* Editor Form */}
-      <div className="card bg-white p-8">
+      <div className="card bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          
+          {/* Avatar Image Uploader Preview */}
+          <div className="flex flex-col sm:flex-row items-center gap-6 p-5 bg-slate-50 rounded-2xl border border-slate-100/50">
+            <img
+              src={previewUrl}
+              alt="Farmer Profile Preview"
+              className="w-24 h-24 rounded-full object-cover border-2 border-white shadow-md bg-white shrink-0"
+              onError={(e) => { e.target.src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${formData.name}`; }}
+            />
+            <div className="space-y-2 text-center sm:text-left flex-1 w-full">
+              <label className="block text-[13px] font-bold text-slate-700 uppercase tracking-wide">Farmer Profile Photo</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-all file:cursor-pointer"
+              />
+              <p className="text-[10px] text-slate-400 font-medium">JPEG, PNG, or SVG. Custom uploads are hosted on the Agro Server.</p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-[13px] font-bold text-slate-700 mb-2">Manager Name</label>
               <input
                 type="text"
                 required
-                className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white font-semibold"
+                className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white font-semibold"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
@@ -56,7 +93,7 @@ export default function EditProfile() {
               <input
                 type="text"
                 required
-                className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white font-semibold"
+                className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white font-semibold"
                 value={formData.farmName}
                 onChange={(e) => setFormData({ ...formData, farmName: e.target.value })}
               />
@@ -69,7 +106,7 @@ export default function EditProfile() {
               <input
                 type="email"
                 required
-                className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white font-semibold"
+                className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white font-semibold"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
@@ -79,7 +116,7 @@ export default function EditProfile() {
               <input
                 type="text"
                 required
-                className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white font-semibold"
+                className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white font-semibold"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               />
@@ -87,32 +124,21 @@ export default function EditProfile() {
           </div>
 
           <div>
-            <label className="block text-[13px] font-bold text-slate-700 mb-2">Profile Image Avatar URL</label>
-            <input
-              type="text"
-              required
-              className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white font-semibold"
-              value={formData.avatar}
-              onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
-            />
-          </div>
-
-          <div>
             <label className="block text-[13px] font-bold text-slate-700 mb-2">Grower / Farm Bio</label>
             <textarea
               rows={4}
               required
-              className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 leading-relaxed bg-white font-semibold"
+              className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 leading-relaxed bg-white font-semibold"
               value={formData.bio}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
             />
           </div>
 
-          <div className="flex gap-4 justify-end mt-4 border-t border-[#F0EDE6] pt-6">
+          <div className="flex gap-4 justify-end mt-4 border-t border-slate-100 pt-6">
             <button
               type="button"
               onClick={() => navigate("/profile")}
-              className="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold rounded-full transition-colors border border-[#E3DFD3]"
+              className="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold rounded-full transition-colors border border-slate-200/50"
             >
               Cancel
             </button>
@@ -129,3 +155,5 @@ export default function EditProfile() {
     </div>
   );
 }
+
+

@@ -1,15 +1,44 @@
-import React from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useData } from '../context/DataProvider'
 import ProductGallery from '../component/product-detail/ProductGallery'
 import ProductInfo from '../component/product-detail/ProductInfo'
 import ProductTabs from '../component/product-detail/ProductTabs'
+import axios from 'axios'
 
 function ProductDetail() {
     const { id } = useParams();
     const { products } = useData();
+    const [reviewsList, setReviewsList] = useState([]);
+
+    const API = "http://localhost:5000/api";
 
     const product = products.find((p) => p.id?.toString() === id?.toString());
+
+    const fetchProductReviews = async () => {
+        const pid = product?.id || product?._id;
+        if (pid) {
+            try {
+                const res = await axios.get(`${API}/reviews/product/${pid}`);
+                setReviewsList(res.data);
+            } catch (err) {
+                console.error("Error loading product reviews:", err);
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (product) {
+            fetchProductReviews();
+        }
+    }, [product]);
+
+    // Calculate dynamic average rating based on actual feedback reviews list
+    const averageRating = useMemo(() => {
+        if (reviewsList.length === 0) return Number(product?.rating || 4.8);
+        const sum = reviewsList.reduce((acc, r) => acc + r.rating, 0);
+        return Number((sum / reviewsList.length).toFixed(1));
+    }, [reviewsList, product]);
 
     if (!product) {
         return (
@@ -37,11 +66,19 @@ function ProductDetail() {
             <section className="container mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     <ProductGallery product={product} />
-                    <ProductInfo product={product} />
+                    <ProductInfo 
+                        product={product} 
+                        reviewsCount={reviewsList.length} 
+                        averageRating={averageRating} 
+                    />
                 </div>
             </section>
 
-            <ProductTabs product={product} />
+            <ProductTabs 
+                product={product} 
+                reviewsList={reviewsList} 
+                onReviewAdded={fetchProductReviews} 
+            />
         </div>
     )
 }

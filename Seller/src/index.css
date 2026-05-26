@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-    --color-primary: #3F704D;
-    --color-primary-dark: #2E5A3D;
-    --color-primary-light: #EBF2ED;
-    --color-secondary: #0A2E1F;
-    --color-accent: #E29B27;
-    --color-bg-light: #F8F6F0;
-    --color-sidebar-bg: #ECE8DD;
+    --color-primary: #28a745;
+    --color-primary-dark: #1e7e34;
+    --color-primary-light: #e9f7ec;
+    --color-secondary: #0a2e1f;
+    --color-accent: #ffc107;
+    --color-bg-light: #fffcf9;
+    --color-sidebar-bg: #ffffff;
     --font-display: "Outfit", sans-serif;
     --font-body: "Inter", sans-serif;
     --font-serif: "Lora", serif;
@@ -50,6 +50,6 @@
     }
 
     .card {
-        @apply bg-white rounded-2xl shadow-sm border border-[#E9E6DC] overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5;
+        @apply bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5;
     }
 }

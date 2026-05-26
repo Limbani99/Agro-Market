@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 
 export default function Layout() {
-  const { stats, addNewProduct, sellerInfo, user, logout, authChecked } = useData();
+  const { stats, addNewProduct, sellerInfo, user, logout, authChecked, notifications } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -37,9 +37,9 @@ export default function Layout() {
 
   if (!authChecked) {
     return (
-      <div className="min-h-screen bg-[#FDFDFB] flex items-center justify-center font-body">
+      <div className="min-h-screen bg-bg-light flex items-center justify-center font-body">
         <div className="flex flex-col items-center gap-4 text-center">
-          <div className="w-10 h-10 border-4 border-[#3F704D] border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           <p className="text-slate-500 font-bold text-sm">Verifying Grower Session...</p>
         </div>
       </div>
@@ -83,7 +83,7 @@ export default function Layout() {
   return (
     <div className="flex min-h-screen bg-bg-light">
       {/* SIDEBAR */}
-      <aside className="w-64 bg-sidebar-bg border-r border-[#E2DFD3] flex flex-col justify-between fixed top-0 bottom-0 left-0 z-30">
+      <aside className="w-64 bg-sidebar-bg border-r border-slate-100 flex flex-col justify-between fixed top-0 bottom-0 left-0 z-30">
         <div>
           {/* Logo Header */}
           <div className="p-6 pb-4">
@@ -106,8 +106,8 @@ export default function Layout() {
                 className={({ isActive }) => `
                   flex items-center justify-between py-3 pl-6 pr-4 font-semibold text-[14.5px] transition-all relative
                   ${isActive
-                    ? "text-primary bg-bg-light/40 border-r-4 border-primary font-bold"
-                    : "text-slate-600 hover:text-primary hover:bg-bg-light/20"
+                    ? "text-primary bg-primary/10 border-r-4 border-primary font-bold"
+                    : "text-slate-600 hover:text-primary hover:bg-slate-50"
                   }
                 `}
               >
@@ -125,14 +125,14 @@ export default function Layout() {
           {/* Capsule Button */}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-[#3F704D] hover:bg-primary-dark text-white rounded-full font-semibold shadow-sm transition-all duration-200 active:scale-95 text-[14px]"
+            className="w-full flex items-center justify-center gap-2 py-3 bg-primary hover:bg-primary-dark text-white rounded-full font-semibold shadow-sm transition-all duration-200 active:scale-95 text-[14px]"
           >
             <Plus className="w-[18px] h-[18px] stroke-[3px]" />
             <span>List New Product</span>
           </button>
 
           {/* Settings, Support, and Logout Links */}
-          <div className="flex flex-col gap-0.5 pt-2 border-t border-[#E2DFD3]">
+          <div className="flex flex-col gap-0.5 pt-2 border-t border-slate-100">
             {bottomItems.map((item) => (
               <NavLink
                 key={item.name}
@@ -140,8 +140,8 @@ export default function Layout() {
                 className={({ isActive }) => `
                   flex items-center gap-3 py-2 px-4 font-medium text-[13.5px] rounded-lg transition-all
                   ${isActive
-                    ? "text-primary bg-bg-light/40 font-bold"
-                    : "text-slate-600 hover:text-primary hover:bg-bg-light/20"
+                    ? "text-primary bg-primary/10 font-bold"
+                    : "text-slate-600 hover:text-primary hover:bg-slate-50"
                   }
                 `}
               >
@@ -164,14 +164,14 @@ export default function Layout() {
       {/* MAIN CONTAINER */}
       <div className="flex-1 pl-64 flex flex-col min-h-screen">
         {/* HEADER NAVBAR */}
-        <header className="h-[76px] px-8 bg-bg-light flex items-center justify-between border-b border-[#EBE8DE] sticky top-0 z-20">
+        <header className="h-[76px] px-8 bg-bg-light flex items-center justify-between border-b border-slate-100 sticky top-0 z-20">
           {/* Search bar */}
           <div className="relative w-80">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search orders, stock..."
-              className="w-full pl-10 pr-4 py-2 text-[14px] bg-[#EAE6DB]/40 border-0 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 placeholder-slate-500 font-medium"
+              className="w-full pl-10 pr-4 py-2 text-[14px] bg-slate-100 border-0 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 placeholder-slate-500 font-medium"
             />
           </div>
 
@@ -181,7 +181,7 @@ export default function Layout() {
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="p-2 hover:bg-[#EAE6DB]/40 rounded-full relative transition-colors text-slate-700"
+                className="p-2 hover:bg-slate-100 rounded-full relative transition-colors text-slate-700"
               >
                 <Bell className="w-5 h-5 stroke-[2.2px]" />
                 {stats.unreadNotifications > 0 && (
@@ -198,39 +198,55 @@ export default function Layout() {
                     className="fixed inset-0 z-30"
                     onClick={() => setShowNotifications(false)}
                   />
-                  <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl border border-[#E9E6DC] py-2 z-40 animate-in fade-in slide-in-from-top-2 duration-150">
-                    <div className="px-4 py-2 border-b border-[#F0EDE6] flex items-center justify-between">
+                  <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-40 animate-in fade-in slide-in-from-top-2 duration-150">
+                    <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
                       <h4 className="font-bold text-slate-800 text-[14px]">Notifications</h4>
                       <span className="text-[11px] font-bold text-primary bg-primary-light px-2 py-0.5 rounded-full">
                         {stats.unreadNotifications} New
                       </span>
                     </div>
                     <div className="max-h-72 overflow-y-auto">
-                      {stats.lowStockAlerts > 0 && (
-                        <div className="px-4 py-3 hover:bg-[#F8F6F0] flex gap-3 border-b border-[#F0EDE6] cursor-pointer" onClick={() => { navigate("/products"); setShowNotifications(false); }}>
-                          <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
-                            <Boxes className="w-4 h-4" />
-                          </div>
-                          <div>
-                            <p className="text-[12.5px] font-semibold text-slate-800">Low Stock Alert</p>
-                            <p className="text-[11.5px] text-slate-500 mt-0.5">Fresh Farm Eggs has only 3 units left.</p>
-                          </div>
+                      {notifications.filter(n => !n.read).length > 0 ? (
+                        notifications.filter(n => !n.read).slice(0, 4).map((notif) => {
+                          let iconBg = 'bg-slate-50 text-slate-600';
+                          let Icon = Bell;
+                          if (notif.type === 'stock') { iconBg = 'bg-amber-50 text-amber-600'; Icon = Boxes; }
+                          else if (notif.type === 'order') { iconBg = 'bg-blue-50 text-blue-600'; Icon = ClipboardList; }
+                          else if (notif.type === 'review') { iconBg = 'bg-emerald-50 text-emerald-600'; Icon = MessageSquare; }
+                          else if (notif.type === 'payout') { iconBg = 'bg-purple-50 text-purple-600'; Icon = Wallet; }
+
+                          return (
+                            <div
+                              key={notif.id}
+                              className="px-4 py-3 hover:bg-bg-light flex gap-3 border-b border-slate-100 cursor-pointer"
+                              onClick={() => {
+                                if (notif.type === 'order') navigate("/orders");
+                                else if (notif.type === 'review') navigate("/reviews");
+                                else if (notif.type === 'stock') navigate("/products");
+                                else navigate("/notifications");
+                                setShowNotifications(false);
+                              }}
+                            >
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${iconBg}`}>
+                                <Icon className="w-4 h-4" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[12px] font-bold text-slate-800 truncate">{notif.title}</p>
+                                <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2">{notif.desc}</p>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="px-4 py-6 text-center text-slate-400 text-xs">
+                          No new notifications
                         </div>
                       )}
-                      <div className="px-4 py-3 hover:bg-[#F8F6F0] flex gap-3 border-b border-[#F0EDE6] cursor-pointer" onClick={() => { navigate("/orders"); setShowNotifications(false); }}>
-                        <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center flex-shrink-0">
-                          <ClipboardList className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <p className="text-[12.5px] font-semibold text-slate-800">New Pending Order</p>
-                          <p className="text-[11.5px] text-slate-500 mt-0.5">ORD-2854 from Oliver Taylor needs review.</p>
-                        </div>
-                      </div>
                     </div>
                     <Link
                       to="/notifications"
                       onClick={() => setShowNotifications(false)}
-                      className="block text-center py-2.5 text-xs font-bold text-primary hover:bg-[#F8F6F0] rounded-b-2xl border-t border-[#F0EDE6]"
+                      className="block text-center py-2.5 text-xs font-bold text-primary hover:bg-bg-light rounded-b-2xl border-t border-slate-100"
                     >
                       View All Alerts
                     </Link>
@@ -240,7 +256,7 @@ export default function Layout() {
             </div>
 
             {/* Chat Icon */}
-            <button className="p-2 hover:bg-[#EAE6DB]/40 rounded-full text-slate-700 transition-colors" onClick={() => navigate("/support")}>
+            <button className="p-2 hover:bg-slate-100 rounded-full text-slate-700 transition-colors" onClick={() => navigate("/support")}>
               <MessageSquare className="w-5 h-5 stroke-[2.2px]" />
             </button>
 
@@ -248,7 +264,7 @@ export default function Layout() {
             <div className="relative">
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center gap-3.5 pl-4 border-l border-[#EBE8DE] text-left hover:opacity-85 transition-opacity"
+                className="flex items-center gap-3.5 pl-4 border-l border-slate-100 text-left hover:opacity-85 transition-opacity"
               >
                 <div>
                   <p className="font-bold text-slate-800 text-[14.5px] leading-tight">
@@ -261,18 +277,18 @@ export default function Layout() {
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="w-10 h-10 rounded-full object-cover border border-[#E9E6DC] shadow-sm"
+                  className="w-10 h-10 rounded-full object-cover border border-slate-100 shadow-sm"
                 />
               </button>
 
               {showProfileMenu && (
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setShowProfileMenu(false)} />
-                  <div className="absolute right-0 mt-3 w-48 bg-white rounded-2xl shadow-xl border border-[#E9E6DC] py-2 z-45 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="absolute right-0 mt-3 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-45 animate-in fade-in slide-in-from-top-2 duration-150">
                     <Link
                       to="/profile"
                       onClick={() => setShowProfileMenu(false)}
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-[13.5px] font-semibold text-slate-700 hover:bg-[#F8F6F0] transition-colors"
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-[13.5px] font-semibold text-slate-700 hover:bg-bg-light transition-colors"
                     >
                       <User className="w-4 h-4 text-slate-400" />
                       <span>My Profile</span>
@@ -280,12 +296,12 @@ export default function Layout() {
                     <Link
                       to="/settings"
                       onClick={() => setShowProfileMenu(false)}
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-[13.5px] font-semibold text-slate-700 hover:bg-[#F8F6F0] transition-colors"
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-[13.5px] font-semibold text-slate-700 hover:bg-bg-light transition-colors"
                     >
                       <Settings className="w-4 h-4 text-slate-400" />
                       <span>Settings</span>
                     </Link>
-                    <div className="border-t border-[#F0EDE6] my-1" />
+                    <div className="border-t border-slate-100 my-1" />
                     <button
                       onClick={() => { handleLogoutClick(); setShowProfileMenu(false); }}
                       className="flex items-center gap-2.5 px-4 py-2.5 text-[13.5px] font-bold text-rose-600 hover:bg-rose-50 transition-colors w-full text-left"
@@ -309,7 +325,7 @@ export default function Layout() {
       {/* LIST NEW PRODUCT MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-[480px] p-8 shadow-2xl border border-[#E9E6DC] animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-3xl w-[480px] p-8 shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-serif text-xl font-bold text-slate-800">List New Farm Product</h3>
               <button
@@ -327,7 +343,7 @@ export default function Layout() {
                   type="text"
                   required
                   placeholder="e.g. Fresh Honey Crisp Apples"
-                  className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700"
+                  className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700"
                   value={newProduct.name}
                   onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                 />
@@ -341,7 +357,7 @@ export default function Layout() {
                     step="0.01"
                     required
                     placeholder="e.g. 5.50"
-                    className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700"
+                    className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700"
                     value={newProduct.price}
                     onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
                   />
@@ -352,7 +368,7 @@ export default function Layout() {
                     type="number"
                     required
                     placeholder="e.g. 25"
-                    className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700"
+                    className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700"
                     value={newProduct.stock}
                     onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
                   />
@@ -362,7 +378,7 @@ export default function Layout() {
               <div>
                 <label className="block text-[13px] font-bold text-slate-700 mb-2">Category</label>
                 <select
-                  className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700"
+                  className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700"
                   value={newProduct.category}
                   onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
                 >
@@ -378,7 +394,7 @@ export default function Layout() {
                 <textarea
                   rows={2}
                   placeholder="Tell buyers about this organic item..."
-                  className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 leading-relaxed"
+                  className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 leading-relaxed"
                   value={newProduct.description}
                   onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
                 />
@@ -389,7 +405,7 @@ export default function Layout() {
                 <input
                   type="text"
                   placeholder="Leave empty for generic farm image"
-                  className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700"
+                  className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700"
                   value={newProduct.image}
                   onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
                 />
@@ -397,7 +413,7 @@ export default function Layout() {
 
               <button
                 type="submit"
-                className="w-full py-3 bg-[#3F704D] hover:bg-primary-dark text-white rounded-full font-bold shadow-sm transition-all duration-200 mt-2 active:scale-95"
+                className="w-full py-3 bg-primary hover:bg-primary-dark text-white rounded-full font-bold shadow-sm transition-all duration-200 mt-2 active:scale-95"
               >
                 Create Product Listing
               </button>
@@ -408,3 +424,5 @@ export default function Layout() {
     </div>
   );
 }
+
+

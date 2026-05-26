@@ -25,11 +25,11 @@ export default function Analytics() {
             <p className="text-slate-400 text-xs font-semibold mb-6">Seasonal sales trend representation</p>
           </div>
 
-          <div className="flex justify-between items-end h-48 px-4 border-b border-[#F0EDE6] pb-2">
+          <div className="flex justify-between items-end h-48 px-4 border-b border-slate-100 pb-2">
             {chartData.map((d) => (
               <div key={d.label} className="flex flex-col items-center gap-3 w-12 group">
                 <div
-                  className="bg-[#3F704D] hover:bg-primary-dark w-8 rounded-t-lg transition-all duration-500 relative flex justify-center origin-bottom scale-y-0 animate-in slide-in-from-bottom duration-700"
+                  className="bg-primary hover:bg-primary-dark w-8 rounded-t-lg transition-all duration-500 relative flex justify-center origin-bottom scale-y-0 animate-in slide-in-from-bottom duration-700"
                   style={{ height: `${d.sales * 1.2}px`, transform: "scaleY(1)" }}
                 >
                   <span className="absolute -top-7 bg-[#0A2E1F] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
@@ -72,3 +72,5 @@ export default function Analytics() {
     </div>
   );
 }
+
+

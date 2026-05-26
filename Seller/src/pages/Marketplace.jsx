@@ -3,7 +3,7 @@ import { ShoppingBag, Globe } from "lucide-react";
 
 export default function Marketplace() {
   return (
-    <div className="card bg-white p-8 max-w-4xl mx-auto text-center flex flex-col items-center justify-center min-h-[400px] border border-[#E9E6DC] animate-in fade-in duration-300">
+    <div className="card bg-white p-8 max-w-4xl mx-auto text-center flex flex-col items-center justify-center min-h-[400px] border border-slate-100 animate-in fade-in duration-300">
       <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100 mb-6">
         <ShoppingBag className="w-8 h-8" />
       </div>
@@ -20,3 +20,5 @@ export default function Marketplace() {
     </div>
   );
 }
+
+

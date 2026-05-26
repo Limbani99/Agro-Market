@@ -21,6 +21,10 @@ const ReviewSchema = new mongoose.Schema({
     comment: {
         type: String,
         required: true
+    },
+    reply: {
+        type: String,
+        default: ''
     }
 }, { timestamps: true });
 

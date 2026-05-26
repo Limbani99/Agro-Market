@@ -39,6 +39,36 @@ const mapLocalItem = (product, qty) => ({
     stock: product.stock
 });
 
+// Helper: map a raw DB order item to our UI shape
+const mapDbOrder = (dbOrder) => {
+    return {
+        id: dbOrder._id,
+        status: dbOrder.status,
+        statusColor: dbOrder.status === 'Pending' ? 'bg-slate-100 text-slate-700' :
+                     dbOrder.status === 'Shipped' ? 'bg-yellow-100 text-yellow-700' :
+                     dbOrder.status === 'Delivered' ? 'bg-green-100 text-green-700' :
+                     'bg-red-100 text-red-700',
+        date: new Date(dbOrder.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        total: `$${Number(dbOrder.totalPrice).toFixed(2)}`,
+        rawTotal: Number(dbOrder.totalPrice),
+        shippingAddress: dbOrder.shippingAddress,
+        phone: dbOrder.phone,
+        paymentMethod: dbOrder.paymentMethod,
+        products: (dbOrder.products || []).map(p => {
+            const prod = p.product;
+            if (!prod) return null;
+            return {
+                id: prod._id,
+                name: prod.name,
+                price: Number(prod.price),
+                quantity: p.quantity,
+                image: prod.images?.[0] || 'https://images.unsplash.com/photo-1524179524541-1bb7cee6ed2d?auto=format&fit=crop&q=80&w=400',
+                seller: prod.sellerId?.farmName || prod.sellerId?.name || 'Agro Market Seller'
+            };
+        }).filter(Boolean)
+    };
+};
+
 export const DataProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
@@ -58,14 +88,13 @@ export const DataProvider = ({ children }) => {
     };
 
     const logout = () => {
-        // On logout: clear DB cart from memory, keep localStorage as guest cart
         setUser(null);
         setToken(null);
         setrole(null);
         localStorage.removeItem("user");
         localStorage.removeItem("token");
-        // Reset to empty (guest starts fresh; they could merge but that's advanced)
         setCartItems([]);
+        setOrders([]);
         localStorage.removeItem("cart");
     };
 
@@ -95,7 +124,7 @@ export const DataProvider = ({ children }) => {
 
     // Axios auth interceptor
     useEffect(() => {
-        const interceptor = axios.interceptors.request.use(
+        const requestInterceptor = axios.interceptors.request.use(
             (config) => {
                 const tok = localStorage.getItem("token") || sessionStorage.getItem("token");
                 if (tok) config.headers["Authorization"] = `Bearer ${tok}`;
@@ -103,7 +132,28 @@ export const DataProvider = ({ children }) => {
             },
             (error) => Promise.reject(error)
         );
-        return () => axios.interceptors.request.eject(interceptor);
+
+        const responseInterceptor = axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response && error.response.status === 401) {
+                    setUser(null);
+                    setToken(null);
+                    setrole(null);
+                    localStorage.removeItem("user");
+                    localStorage.removeItem("token");
+                    setCartItems([]);
+                    setOrders([]);
+                    localStorage.removeItem("cart");
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        return () => {
+            axios.interceptors.request.eject(requestInterceptor);
+            axios.interceptors.response.eject(responseInterceptor);
+        };
     }, []);
 
     // ─────────────────── Products ───────────────────
@@ -137,7 +187,7 @@ export const DataProvider = ({ children }) => {
         } catch { return []; }
     });
 
-    // Sync localStorage whenever cartItems changes (for guest / offline)
+    // Sync localStorage whenever cartItems changes
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(cartItems));
     }, [cartItems]);
@@ -147,7 +197,6 @@ export const DataProvider = ({ children }) => {
         if (!authChecked) return;
 
         if (token && user) {
-            // Fetch from DB
             axios.get(`${API}/cart`)
                 .then(res => {
                     const items = (res.data?.items || []).map(mapDbItem).filter(Boolean);
@@ -155,10 +204,8 @@ export const DataProvider = ({ children }) => {
                 })
                 .catch(err => {
                     console.error("Error loading cart from DB:", err);
-                    // Fall back to localStorage
                 });
         }
-        // If no user, cartItems stays as loaded from localStorage (guest mode)
     }, [token, user, authChecked]);
 
     // ─────────────────── Toast ───────────────────
@@ -177,7 +224,6 @@ export const DataProvider = ({ children }) => {
     };
 
     // ─────────────────── Cart Actions ───────────────────
-
     const addToCart = async (product, qty = 1) => {
         const productId = product.id || product._id;
 
@@ -191,7 +237,6 @@ export const DataProvider = ({ children }) => {
         });
         showToast(product);
 
-        // Sync to DB if logged in
         if (token && user) {
             try {
                 const res = await axios.post(`${API}/cart/add`, { productId, quantity: qty });
@@ -204,7 +249,6 @@ export const DataProvider = ({ children }) => {
     };
 
     const removeFromCart = async (productId) => {
-        // Optimistic update
         setCartItems(prev => prev.filter(i => i.id !== productId));
 
         if (token && user) {
@@ -220,8 +264,6 @@ export const DataProvider = ({ children }) => {
 
     const updateCartQuantity = async (productId, qty) => {
         const safeQty = Math.max(1, qty);
-
-        // Optimistic update
         setCartItems(prev => prev.map(i => i.id === productId ? { ...i, quantity: safeQty } : i));
 
         if (token && user) {
@@ -251,6 +293,274 @@ export const DataProvider = ({ children }) => {
     const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
     const cartTotal = cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
+    // ─────────────────── Orders State ───────────────────
+    const [orders, setOrders] = useState([]);
+
+    const fetchOrders = useCallback(async () => {
+        if (token && user) {
+            try {
+                const res = await axios.get(`${API}/order`);
+                const mapped = (res.data || []).map(mapDbOrder);
+                setOrders(mapped);
+            } catch (err) {
+                console.error("Error fetching orders:", err);
+            }
+        }
+    }, [token, user]);
+
+    useEffect(() => {
+        if (token && user) {
+            fetchOrders();
+        } else {
+            setOrders([]);
+        }
+    }, [token, user, fetchOrders]);
+
+    // ─────────────────── Notifications State ───────────────────
+    const [notifications, setNotifications] = useState([]);
+
+    const fetchNotifications = useCallback(async () => {
+        if (token && user) {
+            try {
+                const res = await axios.get(`${API}/notifications`);
+                const mapped = res.data.map(n => ({
+                    id: n._id,
+                    type: n.type || 'general',
+                    title: n.title || 'Marketplace Alert',
+                    desc: n.message || '',
+                    read: n.isRead,
+                    date: new Date(n.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                }));
+                setNotifications(mapped);
+            } catch (err) {
+                console.error("Error fetching notifications:", err);
+            }
+        }
+    }, [token, user]);
+
+    const markNotificationRead = async (id) => {
+        try {
+            await axios.put(`${API}/notifications/read/${id}`);
+            setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+        } catch (err) {
+            console.error("Error marking notification read:", err);
+        }
+    };
+
+    const markAllNotificationsRead = async () => {
+        try {
+            await axios.put(`${API}/notifications/read-all`);
+            setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+        } catch (err) {
+            console.error("Error marking all notifications read:", err);
+        }
+    };
+
+    const deleteNotification = async (id) => {
+        try {
+            await axios.delete(`${API}/notifications/${id}`);
+            setNotifications(prev => prev.filter(n => n.id !== id));
+        } catch (err) {
+            console.error("Error deleting notification:", err);
+        }
+    };
+
+    useEffect(() => {
+        if (!authChecked) return;
+
+        if (token && user) {
+            fetchNotifications();
+        } else {
+            setNotifications([]);
+        }
+    }, [token, user, authChecked, fetchNotifications]);
+
+    // ─────────────────── Wishlist State ───────────────────
+    const [wishlistItems, setWishlistItems] = useState([]);
+
+    const fetchWishlist = useCallback(async () => {
+        if (token && user) {
+            try {
+                const res = await axios.get(`${API}/wishlist`);
+                const mapped = res.data.map(item => {
+                    const p = item.product;
+                    if (!p) return null;
+                    return {
+                        id: p._id,
+                        wishlistItemId: item._id,
+                        name: p.name,
+                        price: Number(p.price),
+                        image: p.images?.[0] || 'https://images.unsplash.com/photo-1524179524541-1bb7cee6ed2d?auto=format&fit=crop&q=80&w=400',
+                        seller: p.sellerId?.farmName || p.sellerId?.name || 'Agro Market Seller',
+                        rating: p.rating || 4.8,
+                        unit: p.unit || 'lb',
+                        badge: p.stock > 10 ? 'PEAK SEASON' : 'ORGANIC',
+                        stock: p.stock
+                    };
+                }).filter(Boolean);
+                setWishlistItems(mapped);
+            } catch (err) {
+                console.error("Error fetching wishlist:", err);
+            }
+        }
+    }, [token, user]);
+
+    const toggleWishlist = async (product) => {
+        if (!token || !user) {
+            alert("Please log in to manage your wishlist");
+            return;
+        }
+        const productId = product.id || product._id;
+        const isWish = wishlistItems.some(item => item.id === productId);
+
+        if (isWish) {
+            try {
+                await axios.delete(`${API}/wishlist/remove/${productId}`);
+                setWishlistItems(prev => prev.filter(item => item.id !== productId));
+            } catch (err) {
+                console.error("Error removing from wishlist:", err);
+            }
+        } else {
+            try {
+                const res = await axios.post(`${API}/wishlist/add`, { productId });
+                const p = res.data.product;
+                if (p) {
+                    const newItem = {
+                        id: p._id,
+                        wishlistItemId: res.data._id,
+                        name: p.name,
+                        price: Number(p.price),
+                        image: p.images?.[0] || 'https://images.unsplash.com/photo-1524179524541-1bb7cee6ed2d?auto=format&fit=crop&q=80&w=400',
+                        seller: p.sellerId?.farmName || p.sellerId?.name || 'Agro Market Seller',
+                        rating: p.rating || 4.8,
+                        unit: p.unit || 'lb',
+                        badge: p.stock > 10 ? 'PEAK SEASON' : 'ORGANIC',
+                        stock: p.stock
+                    };
+                    setWishlistItems(prev => [newItem, ...prev]);
+                }
+            } catch (err) {
+                console.error("Error adding to wishlist:", err);
+            }
+        }
+    };
+
+    const isWishlisted = (productId) => {
+        return wishlistItems.some(item => item.id === productId);
+    };
+
+    useEffect(() => {
+        if (!authChecked) return;
+
+        if (token && user) {
+            fetchWishlist();
+        } else {
+            setWishlistItems([]);
+        }
+    }, [token, user, authChecked, fetchWishlist]);
+
+    // ─────────────────── Favorite Farmers State ───────────────────
+    const [favoriteFarmers, setFavoriteFarmers] = useState(() => {
+        try {
+            const saved = localStorage.getItem("favoriteFarmers");
+            return saved ? JSON.parse(saved) : [];
+        } catch { return []; }
+    });
+
+    useEffect(() => {
+        localStorage.setItem("favoriteFarmers", JSON.stringify(favoriteFarmers));
+    }, [favoriteFarmers]);
+
+    const toggleFavoriteFarmer = (farmer) => {
+        const farmerId = farmer.id || farmer._id;
+        setFavoriteFarmers(prev => {
+            const exists = prev.some(f => f.id === farmerId);
+            if (exists) {
+                return prev.filter(f => f.id !== farmerId);
+            } else {
+                return [...prev, {
+                    id: farmerId,
+                    name: farmer.name,
+                    farmName: farmer.farmName || 'Terra Agro',
+                    avatar: farmer.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${farmer.name}`
+                }];
+            }
+        });
+    };
+
+    const isFavoriteFarmer = (farmerId) => {
+        return favoriteFarmers.some(f => f.id === farmerId);
+    };
+
+    const placeOrder = async (orderDetails) => {
+        if (!token || !user) {
+            throw new Error("Please log in to place an order");
+        }
+
+        try {
+            const backendProducts = cartItems.map(item => ({
+                product: item.id,
+                quantity: item.quantity
+            }));
+
+            const res = await axios.post(`${API}/order/add`, {
+                products: backendProducts,
+                totalPrice: orderDetails.totalPrice,
+                shippingAddress: orderDetails.shippingAddress,
+                phone: orderDetails.phone,
+                paymentMethod: orderDetails.paymentMethod || 'Cash on Delivery'
+            });
+
+            const newOrder = mapDbOrder(res.data);
+            setOrders(prev => [newOrder, ...prev]);
+            
+            // Clear in-memory cart
+            setCartItems([]);
+            localStorage.removeItem("cart");
+            
+            // Re-fetch products to update stock counts
+            fetchProducts();
+
+            return newOrder;
+        } catch (err) {
+            console.error("Error placing order:", err);
+            throw new Error(err.response?.data?.message || "Failed to place order");
+        }
+    };
+
+    const updateProfile = async (profileData) => {
+        try {
+            const formData = new FormData();
+            formData.append("name", profileData.name);
+            formData.append("email", profileData.email);
+            formData.append("phone", profileData.phone);
+            formData.append("address", profileData.address);
+
+            if (profileData.imageFile) {
+                formData.append("avatar", profileData.imageFile);
+            } else if (profileData.avatar) {
+                formData.append("avatar", profileData.avatar);
+            }
+
+            const res = await axios.put(`${API}/users/profile`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+
+            if (res.data.success) {
+                setUser(res.data.user);
+                localStorage.setItem("user", JSON.stringify(res.data.user));
+                return true;
+            }
+            return false;
+        } catch (err) {
+            console.error("Error updating profile:", err);
+            alert(err.response?.data?.message || "Failed to update profile");
+            return false;
+        }
+    };
+
     // ─────────────────── Context Value ───────────────────
     const value = {
         user, token, role,
@@ -265,6 +575,22 @@ export const DataProvider = ({ children }) => {
         clearCart,
         cartCount,
         cartTotal,
+        orders,
+        fetchOrders,
+        placeOrder,
+        updateProfile,
+        notifications,
+        fetchNotifications,
+        markNotificationRead,
+        markAllNotificationsRead,
+        deleteNotification,
+        wishlistItems,
+        fetchWishlist,
+        toggleWishlist,
+        isWishlisted,
+        favoriteFarmers,
+        toggleFavoriteFarmer,
+        isFavoriteFarmer,
         toastItem,
         dismissToast
     };

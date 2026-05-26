@@ -119,7 +119,7 @@ export default function EditProduct() {
               type="text"
               required
               placeholder="e.g. Crisp Honeycrisp Apples"
-              className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-medium"
+              className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-medium"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
@@ -133,7 +133,7 @@ export default function EditProduct() {
                 step="0.01"
                 required
                 placeholder="e.g. 4.50"
-                className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-medium"
+                className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-medium"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
               />
@@ -144,7 +144,7 @@ export default function EditProduct() {
                 type="number"
                 required
                 placeholder="e.g. 50"
-                className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-medium"
+                className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-medium"
                 value={formData.stock}
                 onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
               />
@@ -152,7 +152,7 @@ export default function EditProduct() {
             <div>
               <label className="block text-[13px] font-bold text-slate-700 mb-2">Category</label>
               <select
-                className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-semibold"
+                className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-semibold"
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               >
@@ -170,7 +170,7 @@ export default function EditProduct() {
               rows={4}
               required
               placeholder="Describe this listing..."
-              className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 leading-relaxed font-medium"
+              className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 leading-relaxed font-medium"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
@@ -192,7 +192,7 @@ export default function EditProduct() {
                 return (
                   <div
                     key={index}
-                    className="relative group border-2 border-dashed border-[#E3DFD3] hover:border-primary bg-[#FDFDFB] hover:bg-[#F9F9F4] rounded-2xl aspect-square flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden"
+                    className="relative group border-2 border-dashed border-slate-200/50 hover:border-primary bg-bg-light hover:bg-[#F9F9F4] rounded-2xl aspect-square flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden"
                     onClick={() => {
                       if (!displaySrc) {
                         document.getElementById(`file-input-${index}`).click();
@@ -262,12 +262,12 @@ export default function EditProduct() {
             </div>
           </div>
 
-          <div className="flex gap-4 justify-end mt-4 border-t border-[#F0EDE6] pt-6">
+          <div className="flex gap-4 justify-end mt-4 border-t border-slate-100 pt-6">
             <button
               type="button"
               disabled={isSaving}
               onClick={() => navigate("/products")}
-              className="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 disabled:opacity-50 text-slate-600 font-bold rounded-full transition-colors border border-[#E3DFD3]"
+              className="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 disabled:opacity-50 text-slate-600 font-bold rounded-full transition-colors border border-slate-200/50"
             >
               Cancel
             </button>
@@ -285,3 +285,5 @@ export default function EditProduct() {
     </div>
   );
 }
+
+

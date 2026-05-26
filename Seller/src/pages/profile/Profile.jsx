@@ -33,7 +33,7 @@ export default function Profile() {
         <img
           src={user.avatar}
           alt={user.name}
-          className="w-24 h-24 rounded-full object-cover border border-[#E9E6DC] shadow-sm flex-shrink-0"
+          className="w-24 h-24 rounded-full object-cover border border-slate-100 shadow-sm flex-shrink-0"
         />
 
         {/* Profile Body */}
@@ -55,7 +55,7 @@ export default function Profile() {
             {user.bio}
           </p>
 
-          <div className="flex flex-col gap-2 pt-4 border-t border-[#F0EDE6] text-[13px]">
+          <div className="flex flex-col gap-2 pt-4 border-t border-slate-100 text-[13px]">
             <div className="flex items-center justify-center md:justify-start gap-2.5 text-slate-600 font-semibold">
               <MapPin className="w-4 h-4 text-primary" />
               <span>{user.location}</span>
@@ -93,3 +93,5 @@ export default function Profile() {
     </div>
   );
 }
+
+

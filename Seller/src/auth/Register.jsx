@@ -36,7 +36,7 @@ export default function Register() {
       <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-primary/5 blur-3xl" />
       <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-accent/5 blur-3xl" />
 
-      <div className="w-full max-w-lg bg-white rounded-3xl border border-[#E9E6DC] p-8 shadow-xl relative z-10 animate-in fade-in zoom-in-95 duration-300">
+      <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-100 p-8 shadow-xl relative z-10 animate-in fade-in zoom-in-95 duration-300">
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-primary flex items-center justify-center border border-emerald-100/50 mx-auto mb-4 hover:scale-105 transition-transform duration-300">
             <Sprout className="w-8 h-8 stroke-[2.2px]" />
@@ -55,7 +55,7 @@ export default function Register() {
                   type="text"
                   required
                   placeholder="James Miller"
-                  className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
+                  className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
@@ -70,7 +70,7 @@ export default function Register() {
                   type="text"
                   required
                   placeholder="Green Valley Farm"
-                  className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
+                  className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
                   value={formData.farmName}
                   onChange={(e) => setFormData({ ...formData, farmName: e.target.value })}
                 />
@@ -86,7 +86,7 @@ export default function Register() {
                 type="text"
                 required
                 placeholder="482 Organic Way, Valley Crest, CA"
-                className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
+                className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               />
@@ -102,7 +102,7 @@ export default function Register() {
                   type="text"
                   required
                   placeholder="1234567890"
-                  className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
+                  className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 />
@@ -117,7 +117,7 @@ export default function Register() {
                   type="email"
                   required
                   placeholder="james@valley.com"
-                  className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
+                  className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
@@ -133,7 +133,7 @@ export default function Register() {
                 type="password"
                 required
                 placeholder="Choose a secure password"
-                className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
+                className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/35 font-medium"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
@@ -142,14 +142,14 @@ export default function Register() {
 
           <button
             type="submit"
-            className="w-full py-3 bg-[#3F704D] hover:bg-primary-dark text-white rounded-full font-bold shadow-sm transition-all duration-200 mt-2 active:scale-95 inline-flex items-center justify-center gap-2"
+            className="w-full py-3 bg-primary hover:bg-primary-dark text-white rounded-full font-bold shadow-sm transition-all duration-200 mt-2 active:scale-95 inline-flex items-center justify-center gap-2"
           >
             <span>Register Farm Entity</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
 
-        <div className="text-center mt-6 pt-5 border-t border-[#F0EDE6] text-xs font-semibold text-slate-500">
+        <div className="text-center mt-6 pt-5 border-t border-slate-100 text-xs font-semibold text-slate-500">
           Already have a farm catalog?{" "}
           <Link to="/login" className="text-primary hover:text-primary-dark hover:underline font-bold">
             Sign In Here
@@ -159,3 +159,5 @@ export default function Register() {
     </div>
   );
 }
+
+

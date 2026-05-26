@@ -3,10 +3,64 @@ import axios from "axios";
 
 export const DataContext = createContext();
 
+// Helper: map a raw DB order to Seller UI shape
+const mapDbOrderToSeller = (dbOrder, sellerId) => {
+  const myProducts = (dbOrder.products || []).filter(p => {
+    const prod = p.product;
+    if (!prod) return false;
+    return prod.sellerId === sellerId || (prod.sellerId && (prod.sellerId._id === sellerId || prod.sellerId.id === sellerId));
+  });
+
+  if (myProducts.length === 0) return null;
+
+  const myAmount = myProducts.reduce((sum, p) => sum + (Number(p.product?.price || 0) * p.quantity), 0);
+  const firstProduct = myProducts[0]?.product;
+  const productName = firstProduct ? firstProduct.name : 'Harvest Item';
+  const displayProduct = myProducts.length > 1 
+      ? `${productName} + ${myProducts.length - 1} more` 
+      : productName;
+
+  const items = myProducts.map(p => ({
+      name: p.product?.name || 'Harvest Item',
+      qty: p.quantity,
+      price: Number(p.product?.price || 0)
+  }));
+
+  const customerName = dbOrder.user?.name || 'Agro Market Buyer';
+  const initials = customerName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+  return {
+      id: dbOrder._id,
+      initials,
+      customer: customerName,
+      email: dbOrder.user?.email || 'buyer@marketplace.com',
+      product: displayProduct,
+      items,
+      status: dbOrder.status,
+      amount: myAmount,
+      address: dbOrder.shippingAddress || dbOrder.user?.address || 'USA',
+      phone: dbOrder.phone || dbOrder.user?.phone || 'N/A',
+      date: new Date(dbOrder.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  };
+};
+
+// Helper: map a raw DB review to Seller UI shape
+const mapDbReviewToSeller = (dbReview) => {
+  return {
+    id: dbReview._id,
+    author: dbReview.user?.name || 'Agro Market Buyer',
+    product: dbReview.product?.name || 'Deleted Product',
+    rating: dbReview.rating,
+    comment: dbReview.comment,
+    reply: dbReview.reply,
+    date: new Date(dbReview.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  };
+};
+
 export const DataProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  const [role, setrole] = useState(null)
+  const [role, setrole] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
 
   const login = (userData, token) => {
@@ -19,10 +73,14 @@ export const DataProvider = ({ children }) => {
       localStorage.setItem("token", token);
     }
   }
+
   const logout = () => {
     setUser(null);
     setToken(null);
     setrole(null);
+    setOrders([]);
+    setProducts([]);
+    setReviews([]);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
   }
@@ -59,9 +117,9 @@ export const DataProvider = ({ children }) => {
     setAuthChecked(true);
   }, []);
 
-  // Axios request interceptor for token
+  // Axios request/response interceptor for token & auth state
   useEffect(() => {
-    const interceptor = axios.interceptors.request.use(
+    const requestInterceptor = axios.interceptors.request.use(
       (config) => {
         const token =
           localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -71,59 +129,34 @@ export const DataProvider = ({ children }) => {
       (error) => Promise.reject(error),
     );
 
-    return () => axios.interceptors.request.eject(interceptor);
+    const responseInterceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          setUser(null);
+          setToken(null);
+          setrole(null);
+          setOrders([]);
+          setProducts([]);
+          setReviews([]);
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.request.eject(requestInterceptor);
+      axios.interceptors.response.eject(responseInterceptor);
+    };
   }, []);
 
   const [products, setProducts] = useState([]);
-  const [orders, setOrders] = useState([
-    {
-      id: 2854,
-      initials: "OT",
-      customer: "Oliver Taylor",
-      product: "Crisp Honeycrisp Apples",
-      status: "Pending",
-      amount: 110.00,
-      date: "May 24, 2026"
-    },
-    {
-      id: 2853,
-      initials: "MS",
-      customer: "Maria Silva",
-      product: "Organic Heirloom Tomatoes",
-      status: "Shipped",
-      amount: 85.50,
-      date: "May 23, 2026"
-    },
-    {
-      id: 2852,
-      initials: "JD",
-      customer: "John Doe",
-      product: "Fresh Farm Eggs",
-      status: "Delivered",
-      amount: 45.00,
-      date: "May 22, 2026"
-    }
-  ]);
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      author: "Jane Smith",
-      product: "Crisp Honeycrisp Apples",
-      rating: 5,
-      date: "May 24, 2026",
-      comment: "These apples were super crisp and sweet! Definitely buying again.",
-      reply: "Thank you for the review, Jane! Glad you liked them."
-    },
-    {
-      id: 2,
-      author: "Robert Johnson",
-      product: "Organic Heirloom Tomatoes",
-      rating: 4,
-      date: "May 23, 2026",
-      comment: "Very juicy and full of flavor. One or two were slightly bruised in transit, but overall excellent quality.",
-      reply: ""
-    }
-  ]);
+  const [orders, setOrders] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [withdrawals, setWithdrawals] = useState([]);
 
   const fetchProducts = async () => {
     try {
@@ -155,12 +188,164 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  const fetchOrders = async () => {
+    try {
+      const savedUser = localStorage.getItem("user");
+      let currentUserId = user?._id || user?.id;
+      if (!currentUserId && savedUser && savedUser !== "undefined" && savedUser !== "null") {
+        try {
+          const parsed = JSON.parse(savedUser);
+          currentUserId = parsed?._id || parsed?.id;
+        } catch (e) {
+          console.error("Error parsing savedUser in fetchOrders", e);
+        }
+      }
+      
+      if (currentUserId) {
+        const res = await axios.get("http://localhost:5000/api/order/seller");
+        const mapped = res.data.map(o => mapDbOrderToSeller(o, currentUserId)).filter(Boolean);
+        setOrders(mapped);
+      } else {
+        setOrders([]);
+      }
+    } catch (error) {
+      console.error("Error fetching seller orders", error);
+    }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const savedUser = localStorage.getItem("user");
+      let currentUserId = user?._id || user?.id;
+      if (!currentUserId && savedUser && savedUser !== "undefined" && savedUser !== "null") {
+        try {
+          const parsed = JSON.parse(savedUser);
+          currentUserId = parsed?._id || parsed?.id;
+        } catch (e) {
+          console.error("Error parsing savedUser in fetchReviews", e);
+        }
+      }
+      
+      if (currentUserId) {
+        const res = await axios.get("http://localhost:5000/api/reviews/seller");
+        const mapped = res.data.map(mapDbReviewToSeller);
+        setReviews(mapped);
+      } else {
+        setReviews([]);
+      }
+    } catch (error) {
+      console.error("Error fetching seller reviews", error);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const savedUser = localStorage.getItem("user");
+      let currentUserId = user?._id || user?.id;
+      if (!currentUserId && savedUser && savedUser !== "undefined" && savedUser !== "null") {
+        try {
+          const parsed = JSON.parse(savedUser);
+          currentUserId = parsed?._id || parsed?.id;
+        } catch (e) {
+          console.error("Error parsing savedUser in fetchNotifications", e);
+        }
+      }
+      
+      if (currentUserId) {
+        const res = await axios.get("http://localhost:5000/api/notifications");
+        const mapped = res.data.map(n => ({
+          id: n._id,
+          type: n.type || 'general',
+          title: n.title || 'Farm Alert',
+          desc: n.message || '',
+          read: n.isRead,
+          date: new Date(n.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        }));
+        setNotifications(mapped);
+      } else {
+        setNotifications([]);
+      }
+    } catch (error) {
+      console.error("Error fetching notifications", error);
+    }
+  };
+
+  const markNotificationRead = async (id) => {
+    try {
+      await axios.put(`http://localhost:5000/api/notifications/read/${id}`);
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    } catch (error) {
+      console.error("Error marking notification read:", error);
+    }
+  };
+
+  const markAllNotificationsRead = async () => {
+    try {
+      await axios.put("http://localhost:5000/api/notifications/read-all");
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    } catch (error) {
+      console.error("Error marking all notifications read:", error);
+    }
+  };
+
+  const deleteNotification = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/notifications/${id}`);
+      setNotifications(prev => prev.filter(n => n.id !== id));
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+    }
+  };
+
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (user || savedUser) {
       fetchProducts();
+      fetchOrders();
+      fetchReviews();
+      fetchNotifications();
+
+      // Load or seed withdrawals dynamically based on currentUserId
+      let currentUserId = user?._id || user?.id;
+      if (!currentUserId && savedUser && savedUser !== "undefined" && savedUser !== "null") {
+        try {
+          const parsed = JSON.parse(savedUser);
+          currentUserId = parsed?._id || parsed?.id;
+        } catch (e) {
+          console.error("Error parsing savedUser in withdrawals loading", e);
+        }
+      }
+      if (currentUserId) {
+        const saved = localStorage.getItem(`withdrawals_${currentUserId}`);
+        if (saved) {
+          setWithdrawals(JSON.parse(saved));
+        } else {
+          const initialWithdrawals = [
+            {
+              id: "WTH-E7A94B",
+              date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+              bank: "Chase ****4920",
+              status: "Completed",
+              amount: 350.00
+            },
+            {
+              id: "WTH-4A82F1",
+              date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+              bank: "Chase ****4920",
+              status: "Completed",
+              amount: 480.00
+            }
+          ];
+          localStorage.setItem(`withdrawals_${currentUserId}`, JSON.stringify(initialWithdrawals));
+          setWithdrawals(initialWithdrawals);
+        }
+      }
     } else {
       setProducts([]);
+      setOrders([]);
+      setReviews([]);
+      setNotifications([]);
+      setWithdrawals([]);
     }
   }, [user]);
 
@@ -242,30 +427,129 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  const updateOrderStatus = (orderId, newStatus) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await axios.put(`http://localhost:5000/api/order/update/${orderId}`, { status: newStatus });
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+      return true;
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      alert(error.response?.data?.message || "Failed to update status");
+      return false;
+    }
   };
 
-  const addReviewReply = (reviewId, text) => {
-    setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, reply: text } : r));
+  const addReviewReply = async (reviewId, text) => {
+    try {
+      await axios.put(`http://localhost:5000/api/reviews/reply/${reviewId}`, { reply: text });
+      setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, reply: text } : r));
+      return true;
+    } catch (error) {
+      console.error("Error replying to review:", error);
+      alert(error.response?.data?.message || "Failed to submit reply");
+      return false;
+    }
+  };
+
+  const updateProfile = async (profileData) => {
+    try {
+      const formData = new FormData();
+      formData.append("name", profileData.name);
+      formData.append("farmName", profileData.farmName);
+      formData.append("location", profileData.location);
+      formData.append("bio", profileData.bio);
+      formData.append("email", profileData.email);
+
+      if (profileData.imageFile) {
+        formData.append("avatar", profileData.imageFile);
+      } else if (profileData.avatar) {
+        formData.append("avatar", profileData.avatar);
+      }
+
+      const res = await axios.put("http://localhost:5000/api/users/profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+      
+      if (res.data.success) {
+        setUser(res.data.user);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error updating profile", error);
+      alert(error.response?.data?.message || "Failed to update profile");
+      return false;
+    }
+  };
+
+  const requestWithdrawal = (amount, bank) => {
+    const savedUser = localStorage.getItem("user");
+    let currentUserId = user?._id || user?.id;
+    if (!currentUserId && savedUser && savedUser !== "undefined" && savedUser !== "null") {
+      try {
+        const parsed = JSON.parse(savedUser);
+        currentUserId = parsed?._id || parsed?.id;
+      } catch (e) {
+        console.error("Error parsing savedUser in requestWithdrawal", e);
+      }
+    }
+    if (!currentUserId) return false;
+
+    const newWithdrawal = {
+      id: `WTH-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      bank,
+      status: "Processing",
+      amount
+    };
+
+    const updated = [newWithdrawal, ...withdrawals];
+    setWithdrawals(updated);
+    localStorage.setItem(`withdrawals_${currentUserId}`, JSON.stringify(updated));
+    return true;
+  };
+
+  const changeUserPassword = async (currentPassword, newPassword) => {
+    try {
+      await axios.put("http://localhost:5000/api/users/change-password", {
+        currentPassword,
+        newPassword
+      });
+      return true;
+    } catch (error) {
+      console.error("Error changing password:", error);
+      alert(error.response?.data?.message || "Failed to update password");
+      return false;
+    }
   };
 
   const totalSales = orders.filter(o => o.status === "Delivered" || o.status === "Shipped").reduce((sum, o) => sum + o.amount, 0);
+  const rawEarnings = totalSales * 0.9;
+  const totalWithdrawn = withdrawals.reduce((sum, w) => sum + w.amount, 0);
+  const remainingEarnings = Math.max(rawEarnings - totalWithdrawn, 0);
+
   const stats = {
     totalProducts: products.length,
     totalOrders: orders.length,
     totalSales,
-    totalEarnings: totalSales * 0.9,
+    totalEarnings: remainingEarnings,
+    rawEarnings,
+    totalWithdrawn,
     pendingOrders: orders.filter(o => o.status === "Pending").length,
     lowStockAlerts: products.filter(p => p.stock <= 5).length,
-    unreadNotifications: 2
+    unreadNotifications: notifications.filter(n => !n.read).length
   };
 
   const userWithDefaults = user ? {
     ...user,
     type: user.role === "farmer" ? "Farmer" : user.role,
     avatar: user.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${user.name}`,
-    farmName: user.farmName || "Terra Agro"
+    farmName: user.farmName || "Terra Agro",
+    bio: user.bio || "Regenerative organic small-scale family farm committed to cultivating premium, fresh, chemical-free crops for our local community.",
+    location: user.location || "California Valley Organic Acres, USA"
   } : null;
 
   const value = {
@@ -280,10 +564,21 @@ export const DataProvider = ({ children }) => {
     updateProduct,
     deleteProduct,
     orders,
+    fetchOrders,
     updateOrderStatus,
     reviews,
+    fetchReviews,
     addReviewReply,
+    updateProfile,
+    notifications,
+    fetchNotifications,
+    markNotificationRead,
+    markAllNotificationsRead,
+    deleteNotification,
     stats,
+    withdrawals,
+    requestWithdrawal,
+    changeUserPassword,
     isAuthenticated: !!token,
     authChecked
   };
@@ -298,3 +593,4 @@ export const useData = () => {
   const context = useContext(DataContext)
   return context;
 }
+

@@ -30,7 +30,7 @@ export default function Inventory() {
         {products.map((product) => (
           <div key={product.id} className="card bg-white hover:shadow-md transition-shadow group flex flex-col justify-between">
             <div>
-              <div className="relative overflow-hidden aspect-square h-48 w-full border-b border-[#E9E6DC]">
+              <div className="relative overflow-hidden aspect-square h-48 w-full border-b border-slate-100">
                 <img
                   src={product.image}
                   alt={product.name}
@@ -63,7 +63,7 @@ export default function Inventory() {
               </div>
             </div>
 
-            <div className="p-5 pt-0 border-t border-[#F0EDE6]/60 mt-3 flex justify-between items-center text-[12px] font-semibold text-slate-500">
+            <div className="p-5 pt-0 border-t border-slate-100/60 mt-3 flex justify-between items-center text-[12px] font-semibold text-slate-500">
               <span>Rating: {product.rating.toFixed(1)} ★</span>
               <span>Sales: {product.sales} units</span>
             </div>
@@ -73,3 +73,5 @@ export default function Inventory() {
     </div>
   );
 }
+
+

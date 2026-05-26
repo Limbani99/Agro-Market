@@ -2,9 +2,13 @@ import React, { useState } from 'react'
 import { Sun } from 'lucide-react'
 
 const ProductGallery = ({ product }) => {
-    const images = (product.images && product.images.length > 0)
-        ? product.images.filter(img => img && img !== "")
-        : [product.image || 'https://images.unsplash.com/photo-1524179524541-1bb7cee6ed2d?auto=format&fit=crop&q=80&w=800'];
+    let images = (product.images && product.images.length > 0)
+        ? product.images.filter(img => img && img.trim() !== "")
+        : [];
+
+    if (images.length === 0) {
+        images = [product.image || 'https://images.unsplash.com/photo-1524179524541-1bb7cee6ed2d?auto=format&fit=crop&q=80&w=800'];
+    }
 
     const [activeImg, setActiveImg] = useState(0)
 
@@ -13,7 +17,7 @@ const ProductGallery = ({ product }) => {
             {/* Main Image */}
             <div className="relative aspect-square rounded-[2rem] overflow-hidden bg-slate-100 border border-slate-100 group">
                 <div className="absolute top-6 left-6 z-10">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-full text-xs font-bold shadow-lg uppercase tracking-wider">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-full text-xs font-bold shadow-lg uppercase tracking-wider">
                         <Sun className="w-4 h-4" />
                         {product.badge || 'Peak Season'}
                     </div>

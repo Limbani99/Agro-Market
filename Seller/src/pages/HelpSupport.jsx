@@ -51,7 +51,7 @@ export default function HelpSupport() {
                   type="text"
                   required
                   placeholder="e.g. Yield shipping issue"
-                  className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white"
+                  className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white"
                 />
               </div>
               <div>
@@ -60,7 +60,7 @@ export default function HelpSupport() {
                   rows={4}
                   required
                   placeholder="Tell us what you need help with..."
-                  className="w-full px-4 py-2.5 text-[14px] border border-[#E3DFD3] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white leading-relaxed"
+                  className="w-full px-4 py-2.5 text-[14px] border border-slate-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-white leading-relaxed"
                 />
               </div>
               <button type="submit" className="btn-primary w-full">
@@ -70,7 +70,7 @@ export default function HelpSupport() {
           </div>
 
           {/* Quick contact numbers */}
-          <div className="card bg-[#ECE8DD]/40 border border-[#E2DFD3] p-5 flex flex-col gap-4">
+          <div className="card bg-[#ECE8DD]/40 border border-slate-100 p-5 flex flex-col gap-4">
             <h4 className="font-bold text-slate-800 text-[14px]">Urgent Hotlines</h4>
             <div className="flex flex-col gap-2.5">
               <div className="flex items-center gap-3 text-slate-600 text-[13px] font-medium">
@@ -88,3 +88,5 @@ export default function HelpSupport() {
     </div>
   );
 }
+
+

@@ -12,11 +12,12 @@ app.use('/uploads', express.static('uploads'));
 
 app.use('/api/users', require('./routers/userRoutes'))
 app.use('/api/products', require('./routers/productRoutes'))
-// app.use('/api/reviews', require('./routers/reviewRoutes'))
+app.use('/api/reviews', require('./routers/reviewRoutes'))
 app.use('/api/cart', require('./routers/cartRoutes'))
-// app.use('/api/order', require('./routers/orderRoutes'))
+app.use('/api/order', require('./routers/orderRoutes'))
 // app.use('/api/payment', require('./routers/paymentRoutes'))
-// app.use('/api/wishlist', require('./routers/wishlistRoutes'))
+app.use('/api/wishlist', require('./routers/wishlistRoutes'))
+app.use('/api/notifications', require('./routers/notificationRoutes'))
 // app.use('/api/contact', require('./routers/contactRoutes'))
 // app.use('/api/admin', require('./routers/adminRoutes'))
 

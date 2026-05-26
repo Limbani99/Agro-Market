@@ -1,10 +1,19 @@
 // Notification.js
-mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 const NotificationSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
+        required: true
+    },
+    type: {
+        type: String,
+        enum: ['stock', 'order', 'review', 'payout', 'general'],
+        default: 'general'
+    },
+    title: {
+        type: String,
         required: true
     },
     message: {

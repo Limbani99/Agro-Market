@@ -52,7 +52,7 @@ export default function ProductDetails() {
         {/* Product Photo Gallery */}
         <div className="flex flex-col gap-4">
           {/* Main Display Photo */}
-          <div className="rounded-2xl overflow-hidden aspect-square h-[300px] w-full border border-[#E9E6DC] bg-slate-50 relative group shadow-sm">
+          <div className="rounded-2xl overflow-hidden aspect-square h-[300px] w-full border border-slate-100 bg-slate-50 relative group shadow-sm">
             <img
               src={
                 (product.images && product.images.length > 0 && product.images[activeIndex]) ||
@@ -132,8 +132,8 @@ export default function ProductDetails() {
           </div>
 
           {/* Quick Metrics grid */}
-          <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-[#F0EDE6]">
-            <div className="bg-[#F8F6F0] p-4 rounded-2xl border border-[#EAE6DB]/60 flex items-center gap-3">
+          <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-slate-100">
+            <div className="bg-bg-light p-4 rounded-2xl border border-[#EAE6DB]/60 flex items-center gap-3">
               <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center flex-shrink-0">
                 <Boxes className="w-4.5 h-4.5" />
               </div>
@@ -143,7 +143,7 @@ export default function ProductDetails() {
               </div>
             </div>
 
-            <div className="bg-[#F8F6F0] p-4 rounded-2xl border border-[#EAE6DB]/60 flex items-center gap-3">
+            <div className="bg-bg-light p-4 rounded-2xl border border-[#EAE6DB]/60 flex items-center gap-3">
               <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center flex-shrink-0">
                 <DollarSign className="w-4.5 h-4.5" />
               </div>
@@ -164,7 +164,7 @@ export default function ProductDetails() {
         ) : (
           <div className="flex flex-col gap-4">
             {productReviews.map((rev) => (
-              <div key={rev.id} className="p-4 bg-[#F8F6F0]/40 border border-[#EAE6DB]/40 rounded-2xl flex flex-col gap-1.5">
+              <div key={rev.id} className="p-4 bg-bg-light/40 border border-[#EAE6DB]/40 rounded-2xl flex flex-col gap-1.5">
                 <div className="flex items-center gap-2">
                   <span className="text-[13px] font-bold text-slate-700">{rev.author}</span>
                   <div className="flex text-amber-500">
@@ -185,3 +185,5 @@ export default function ProductDetails() {
     </div>
   );
 }
+
+

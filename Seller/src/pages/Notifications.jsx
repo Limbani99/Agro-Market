@@ -74,7 +74,7 @@ export default function Notifications() {
         {notifications.some(n => !n.read) && (
           <button
             onClick={markAllNotificationsRead}
-            className="text-[12.5px] font-bold text-primary hover:text-primary-dark transition-colors inline-flex items-center gap-1.5 self-start sm:self-center px-4 py-2 border border-[#E9E6DC] bg-white rounded-full hover:bg-bg-light shadow-sm"
+            className="text-[12.5px] font-bold text-primary hover:text-primary-dark transition-colors inline-flex items-center gap-1.5 self-start sm:self-center px-4 py-2 border border-slate-100 bg-white rounded-full hover:bg-bg-light shadow-sm"
           >
             <Check className="w-4 h-4 stroke-[2.5px]" />
             <span>Mark all as read</span>
@@ -83,7 +83,7 @@ export default function Notifications() {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 border-b border-[#F0EDE6] pb-1">
+      <div className="flex flex-wrap gap-2 border-b border-slate-100 pb-1">
         {[
           { id: "all", label: "All Alerts" },
           { id: "unread", label: "Unread Only" },
@@ -114,7 +114,7 @@ export default function Notifications() {
               key={notif.id}
               className={`card transition-all border p-5 flex items-start gap-4 hover:shadow-md ${
                 notif.read
-                  ? "bg-white/80 border-[#F0EDE6]"
+                  ? "bg-white/80 border-slate-100"
                   : "bg-emerald-50/20 border-primary/25 relative overflow-hidden before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-primary"
               }`}
             >
@@ -151,7 +151,7 @@ export default function Notifications() {
             </div>
           ))
         ) : (
-          <div className="card bg-white p-12 text-center flex flex-col items-center justify-center border-[#E9E6DC]">
+          <div className="card bg-white p-12 text-center flex flex-col items-center justify-center border-slate-100">
             <div className="w-16 h-16 rounded-full bg-slate-50 text-slate-300 flex items-center justify-center border border-dashed border-slate-200 mb-4">
               <Inbox className="w-8 h-8" />
             </div>
@@ -163,3 +163,5 @@ export default function Notifications() {
     </div>
   );
 }
+
+

@@ -1,14 +1,123 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Minus, Plus, Trash2, ShieldCheck, Leaf, Truck, Award, ShoppingBag } from 'lucide-react';
+import { Minus, Plus, Trash2, ShieldCheck, Leaf, Truck, Award, ShoppingBag, X, CheckCircle2, Phone, MapPin, CreditCard } from 'lucide-react';
 import { useData } from '../context/DataProvider';
 
 const Cart = () => {
-    const { cartItems, removeFromCart, updateCartQuantity, cartTotal } = useData();
+    const { 
+        cartItems, 
+        removeFromCart, 
+        updateCartQuantity, 
+        cartTotal, 
+        isAuthenticated, 
+        user, 
+        placeOrder 
+    } = useData();
+
+    const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+    const [shippingAddress, setShippingAddress] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
+    const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+    const [orderSuccess, setOrderSuccess] = useState(null);
+
+    // Prefill user profile details when loaded
+    useEffect(() => {
+        if (user) {
+            setShippingAddress(user.address || '');
+            setPhoneNumber(user.phone || '');
+        }
+    }, [user]);
 
     const deliveryFee = cartItems.length > 0 ? 5.00 : 0;
     const estimatedTax = cartTotal * 0.08;
     const total = cartTotal + deliveryFee + estimatedTax;
+
+    const handleCheckoutClick = () => {
+        if (!isAuthenticated) {
+            alert('Please sign in to place an order.');
+            return;
+        }
+        setShowCheckoutModal(true);
+    };
+
+    const handlePlaceOrderSubmit = async (e) => {
+        e.preventDefault();
+        if (!shippingAddress.trim()) {
+            alert('Please specify your shipping address.');
+            return;
+        }
+        if (!phoneNumber.trim()) {
+            alert('Please specify a contact phone number.');
+            return;
+        }
+
+        setIsPlacingOrder(true);
+        try {
+            const placed = await placeOrder({
+                totalPrice: total,
+                shippingAddress,
+                phone: phoneNumber,
+                paymentMethod
+            });
+            setOrderSuccess(placed);
+            setShowCheckoutModal(false);
+        } catch (err) {
+            alert(err.message || 'Error creating order');
+        } finally {
+            setIsPlacingOrder(false);
+        }
+    };
+
+    if (orderSuccess) {
+        return (
+            <div className="bg-slate-50 min-h-screen pb-20 pt-10 flex items-center justify-center px-4">
+                <div className="bg-white rounded-[2.5rem] p-8 md:p-12 max-w-lg w-full text-center shadow-xl border border-slate-100 animate-in fade-in zoom-in-95 duration-300">
+                    <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle2 className="w-10 h-10 text-green-600" />
+                    </div>
+                    <h1 className="text-3xl font-display font-black text-secondary mb-2">Order Placed!</h1>
+                    <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+                        Thank you for shopping at Agro Market! Your order has been registered and is being fulfilled by our farmers.
+                    </p>
+                    
+                    <div className="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100 text-left text-xs space-y-3">
+                        <div className="flex justify-between font-bold">
+                            <span className="text-slate-500">Order Reference:</span>
+                            <span className="text-secondary font-mono">#{orderSuccess.id.slice(-8).toUpperCase()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-slate-500">Amount Paid:</span>
+                            <span className="text-primary font-bold">{orderSuccess.total}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-slate-500">Payment Mode:</span>
+                            <span className="text-secondary font-semibold">{orderSuccess.paymentMethod}</span>
+                        </div>
+                        <div className="border-t border-slate-200/60 pt-3">
+                            <span className="text-slate-500 font-bold block mb-1">Shipping Location:</span>
+                            <p className="text-secondary leading-relaxed">{orderSuccess.shippingAddress}</p>
+                        </div>
+                    </div>
+                    
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Link 
+                            to="/profile" 
+                            className="flex-1 bg-secondary hover:bg-slate-800 text-white font-bold py-3.5 rounded-full transition-all text-sm shadow-xs block text-center"
+                        >
+                            View Order
+                        </Link>
+                        <Link 
+                            to="/products" 
+                            className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-3.5 rounded-full transition-all text-sm shadow-xs block text-center"
+                        >
+                            Shop More
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white min-h-screen pb-20">
@@ -144,10 +253,13 @@ const Cart = () => {
                                 </div>
 
                                 <div className="space-y-3">
-                                    <button className="w-full bg-primary hover:bg-primary-dark text-white py-4 rounded-full font-bold shadow-md transition-all active:scale-95">
+                                    <button 
+                                        onClick={handleCheckoutClick}
+                                        className="w-full bg-primary hover:bg-primary-dark text-white py-4 rounded-full font-bold shadow-md transition-all active:scale-95 text-sm"
+                                    >
                                         Proceed to Checkout
                                     </button>
-                                    <Link to="/products" className="w-full block text-center border-2 border-slate-200 hover:border-primary hover:text-primary text-secondary py-3.5 rounded-full font-bold transition-all">
+                                    <Link to="/products" className="w-full block text-center border-2 border-slate-200 hover:border-primary hover:text-primary text-secondary py-3.5 rounded-full font-bold transition-all text-sm">
                                         Continue Shopping
                                     </Link>
                                 </div>
@@ -196,6 +308,114 @@ const Cart = () => {
                     </div>
                 </div>
             </div>
+
+            {/* CHECKOUT INFORMATION MODAL */}
+            {showCheckoutModal && (
+                <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl border border-slate-100 flex flex-col p-8 relative animate-in slide-in-from-bottom-8 duration-300">
+                        {/* Close button */}
+                        <button 
+                            onClick={() => setShowCheckoutModal(false)}
+                            className="absolute top-6 right-6 p-2 rounded-full text-slate-400 hover:text-secondary hover:bg-slate-100 transition-colors"
+                        >
+                            <X className="w-6 h-6" />
+                        </button>
+
+                        <div className="mb-6">
+                            <h2 className="text-3xl font-display font-black text-secondary">Delivery Details</h2>
+                            <p className="text-sm text-gray-400 mt-1">Submit your shipping info to confirm order placement.</p>
+                        </div>
+
+                        <form onSubmit={handlePlaceOrderSubmit} className="space-y-5">
+                            {/* Shipping Address */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
+                                    <MapPin className="w-3.5 h-3.5 text-primary" />
+                                    <span>Shipping Address</span>
+                                </label>
+                                <textarea
+                                    required
+                                    rows="3"
+                                    value={shippingAddress}
+                                    onChange={(e) => setShippingAddress(e.target.value)}
+                                    placeholder="Enter your complete delivery address"
+                                    className="w-full bg-slate-50 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 border border-slate-200/50 resize-none font-medium"
+                                />
+                            </div>
+
+                            {/* Contact Number */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
+                                    <Phone className="w-3.5 h-3.5 text-primary" />
+                                    <span>Phone Number</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    placeholder="e.g. +1 (555) 019-2834"
+                                    className="w-full bg-slate-50 rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 border border-slate-200/50 font-medium"
+                                />
+                            </div>
+
+                            {/* Payment Method Selector */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
+                                    <CreditCard className="w-3.5 h-3.5 text-primary" />
+                                    <span>Payment Method</span>
+                                </label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setPaymentMethod('Cash on Delivery')}
+                                        className={`p-4 rounded-2xl border text-xs font-bold transition-all text-center flex flex-col items-center justify-center gap-1.5 ${
+                                            paymentMethod === 'Cash on Delivery'
+                                                ? 'bg-primary/5 text-primary border-primary'
+                                                : 'border-slate-200 text-slate-500 hover:bg-slate-50'
+                                        }`}
+                                    >
+                                        <span>💵 Cash on Delivery</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPaymentMethod('Online Payment')}
+                                        className={`p-4 rounded-2xl border text-xs font-bold transition-all text-center flex flex-col items-center justify-center gap-1.5 ${
+                                            paymentMethod === 'Online Payment'
+                                                ? 'bg-primary/5 text-primary border-primary'
+                                                : 'border-slate-200 text-slate-500 hover:bg-slate-50'
+                                        }`}
+                                    >
+                                        <span>💳 Card Payment</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Order total info */}
+                            <div className="border-t border-slate-100 pt-4 flex justify-between items-center text-sm font-bold text-secondary">
+                                <span>Grand Total to Pay:</span>
+                                <span className="text-primary text-xl font-black">${total.toFixed(2)}</span>
+                            </div>
+
+                            {/* Place Order CTA */}
+                            <button
+                                type="submit"
+                                disabled={isPlacingOrder}
+                                className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-full shadow-md text-sm transition-all active:scale-95 disabled:opacity-55 flex items-center justify-center gap-2"
+                            >
+                                {isPlacingOrder ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        <span>Processing Order...</span>
+                                    </>
+                                ) : (
+                                    <span>Submit & Place Order</span>
+                                )}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

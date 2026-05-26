@@ -39,14 +39,14 @@ export default function Products() {
       </div>
 
       {/* Control panel (Search & Filter) */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-center p-4 bg-white rounded-2xl border border-[#E9E6DC]">
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-center p-4 bg-white rounded-2xl border border-slate-100">
         {/* Search */}
         <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search farm inventory..."
-            className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-[#E3DFD3] rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/20 font-medium placeholder-slate-400"
+            className="w-full pl-10 pr-4 py-2 text-[13.5px] border border-slate-200/50 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 bg-bg-light/20 font-medium placeholder-slate-400"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -60,8 +60,8 @@ export default function Products() {
               onClick={() => setCategoryFilter(cat)}
               className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
                 categoryFilter === cat
-                  ? "bg-[#3F704D] text-white"
-                  : "text-slate-600 hover:text-primary bg-bg-light/50 border border-[#E3DFD3]/40"
+                  ? "bg-primary text-white"
+                  : "text-slate-600 hover:text-primary bg-bg-light/50 border border-slate-200/50/40"
               }`}
             >
               {cat}
@@ -76,7 +76,7 @@ export default function Products() {
           <div key={prod.id} className="card bg-white hover:shadow-md transition-shadow group flex flex-col justify-between h-full">
             <div>
               {/* Product Card Image */}
-              <div className="relative overflow-hidden aspect-square h-44 w-full border-b border-[#E9E6DC]">
+              <div className="relative overflow-hidden aspect-square h-44 w-full border-b border-slate-100">
                 <img
                   src={prod.image}
                   alt={prod.name}
@@ -109,7 +109,7 @@ export default function Products() {
             </div>
 
             {/* Quick Actions Panel */}
-            <div className="p-4 pt-0 border-t border-[#F0EDE6]/60 mt-3 flex justify-between items-center">
+            <div className="p-4 pt-0 border-t border-slate-100/60 mt-3 flex justify-between items-center">
               <span className="text-[11px] font-bold text-slate-400">Stock: {prod.stock}</span>
               <div className="flex items-center gap-1.5">
                 <button
@@ -147,3 +147,5 @@ export default function Products() {
     </div>
   );
 }
+
+

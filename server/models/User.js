@@ -19,10 +19,25 @@ const UserSchema = new mongoose.Schema({
     },
     address: {
         type: String,
-
     },
     phone: {
-        type: Number
+        type: String
+    },
+    farmName: {
+        type: String,
+        default: ""
+    },
+    bio: {
+        type: String,
+        default: ""
+    },
+    avatar: {
+        type: String,
+        default: ""
+    },
+    location: {
+        type: String,
+        default: ""
     }
-});
+}, { timestamps: true });
 module.exports = mongoose.model("User", UserSchema);
